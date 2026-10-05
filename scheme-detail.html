@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Scheme Detail — MoSJE Udyam Saarthi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<link rel="stylesheet" href="css/main.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="js/i18n.js" defer></script>
+<style>
+/* ── Page-level overrides & new components ── */
+
+/* Fix: API base uses window.origin so it works on any port */
+:root { --apply-bar-h: 68px; }
+
+/* Skeleton shimmer */
+.skel-line { height: 14px; border-radius: 6px; margin-bottom: 8px; background: linear-gradient(90deg,rgba(255,255,255,.08) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.08) 75%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+@keyframes shimmer { to { background-position: -400% 0; } }
+
+/* ── Detail Hero ── */
+.detail-hero {
+  background: linear-gradient(145deg, var(--navy-dk) 0%, var(--navy-lt) 65%, #1d4ed8 100%);
+  color: #fff; padding: 40px 0 40px; position: relative; overflow: hidden;
+}
+.detail-hero::before {
+  content:''; position:absolute; top:-80px; right:-80px; width:420px; height:420px;
+  background:radial-gradient(circle, rgba(249,115,22,.16) 0%,transparent 65%);
+  border-radius:50%; pointer-events:none;
+}
+.detail-hero::after {
+  content:''; position:absolute; bottom:-40px; left:-40px; width:280px; height:280px;
+  background:radial-gradient(circle, rgba(74,222,128,.08) 0%,transparent 65%);
+  border-radius:50%; pointer-events:none;
+}
+.dh-inner { max-width:1280px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+.bcrumb { display:flex; gap:6px; align-items:center; font-size:.74rem; color:rgba(255,255,255,.5); margin-bottom:20px; flex-wrap:wrap; }
+.bcrumb a { color:rgba(255,255,255,.65); text-decoration:none; transition:color .15s; }
+.bcrumb a:hover { color:#fff; }
+.bcrumb .sep { color:rgba(255,255,255,.3); }
+
+.dh-row { display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; margin-bottom:28px; }
+.dh-icon-wrap {
+  width:64px; height:64px; border-radius:18px; background:rgba(255,255,255,.14);
+  border:1.5px solid rgba(255,255,255,.22); display:flex; align-items:center;
+  justify-content:center; font-size:2rem; flex-shrink:0; box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.dh-info { flex:1; min-width:0; }
+.dh-badge-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.dh-badge {
+  display:inline-flex; align-items:center; gap:5px; padding:4px 12px;
+  border-radius:999px; font-size:.72rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.4px; background:rgba(249,115,22,.2); color:#fdba74;
+  border:1px solid rgba(249,115,22,.35);
+}
+.dh-cat-badge {
+  display:inline-flex; align-items:center; gap:5px; padding:4px 12px;
+  border-radius:999px; font-size:.72rem; font-weight:700;
+  background:rgba(255,255,255,.12); color:rgba(255,255,255,.8);
+  border:1px solid rgba(255,255,255,.2);
+}
+.dh-name { font-size:clamp(1.4rem,3vw,2rem); font-weight:900; line-height:1.25; margin-bottom:10px; }
+.dh-desc { font-size:.92rem; color:rgba(255,255,255,.74); max-width:680px; line-height:1.75; }
+
+/* Metrics strip */
+.dh-metrics {
+  display:flex; gap:12px; flex-wrap:wrap; padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.dm {
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16);
+  border-radius:12px; padding:12px 18px; flex:1; min-width:100px;
+  backdrop-filter:blur(4px);
+}
+.dm .v { font-size:1.15rem; font-weight:800; color:#fff; line-height:1.1; }
+.dm .l { font-size:.63rem; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.4px; margin-top:4px; }
+.dm.highlight { background:rgba(249,115,22,.2); border-color:rgba(249,115,22,.4); }
+.dm.highlight .v { color:#fdba74; }
+.dm.subsidy { background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.4); }
+.dm.subsidy .v { color:#86efac; }
+
+/* ── Detail Layout — single column now that sidebar is removed ── */
+.detail-wrap {
+  max-width:960px; margin:0 auto; padding:28px 24px calc(var(--apply-bar-h) + 32px);
+  background:#f8fafc;
+}
+@media(max-width:600px){ .detail-wrap{ padding:20px 16px calc(var(--apply-bar-h) + 24px); } }
+
+/* ── Left column card wrapper ── */
+.left-col { display:flex; flex-direction:column; gap:20px; }
+
+/* ── Tabs ── */
+/* ── Tabs card — NO overflow:hidden (it clips the active border indicator) ── */
+.tabs-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-md);
+}
+
+/* Tab strip */
+.dtabs {
+  display: flex;
+  gap: 0;
+  padding: 0 12px;
+  border-bottom: 2px solid #e2e8f0;
+  background: #fff;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.dtabs::-webkit-scrollbar { display: none; }
+
+/* Individual tab button */
+.dtab {
+  position: relative;
+  padding: 14px 22px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;           /* overlap the 2px border so indicator connects */
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color .15s ease, background .15s ease, border-color .15s ease;
+}
+.dtab:hover {
+  color: var(--navy);
+  background: #f8fafc;
+}
+.dtab.on {
+  color: var(--navy);
+  font-weight: 700;
+  border-bottom-color: var(--navy);
+  background: #fff;
+}
+
+/* Tab content pane */
+.tab-pane { display: none; padding: 24px; }
+.tab-pane.on { display: block; animation: fd .2s ease; }
+@keyframes fd { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+/* Section within tab */
+.tsec { margin-bottom:24px; }
+.tsec:last-child { margin-bottom:0; }
+.tsec-title {
+  font-size:.82rem; font-weight:700; color:#0f172a; display:flex; align-items:center;
+  gap:7px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #f1f5f9;
+}
+.tsec-title .ico { font-size:1rem; }
+
+/* Purpose tags */
+.tag-list { display:flex; flex-wrap:wrap; gap:7px; }
+.tag {
+  display:inline-flex; align-items:center; gap:4px; padding:4px 11px;
+  border-radius:999px; font-size:.75rem; font-weight:600;
+  background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe;
+  text-transform:capitalize; transition:all .15s;
+}
+.tag:hover { background:#dbeafe; }
+
+/* Financial grid */
+.fin-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:500px){ .fin-grid{ grid-template-columns:1fr; } }
+.fin-item {
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:11px 14px;
+  transition:.15s;
+}
+.fin-item:hover { border-color:#bfdbfe; background:#eff6ff; }
+.fin-item .k { font-size:.67rem; text-transform:uppercase; letter-spacing:.4px; color:#94a3b8; margin-bottom:3px; }
+.fin-item .v { font-weight:800; color:#0f172a; font-size:.9rem; }
+.fin-item.accent .v { color:var(--navy); }
+.fin-item.green .v { color:var(--green); }
+.fin-item.orange .v { color:#c2410c; }
+
+/* Hindi description */
+.hindi-block {
+  background: linear-gradient(135deg,#fef9f0,#fff7ed);
+  border:1px solid #fed7aa; border-radius:12px; padding:16px 18px;
+  font-size:.94rem; color:#92400e; line-height:1.85; font-style:italic;
+  position:relative;
+}
+.hindi-block::before { content:'"'; position:absolute; top:-6px; left:12px; font-size:2.5rem; color:#f97316; opacity:.3; line-height:1; }
+
+/* Eligibility criteria */
+.crit-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.crit-list li {
+  display:flex; align-items:flex-start; gap:10px; font-size:.85rem; color:#334155;
+  padding:10px 13px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:9px;
+  transition:.15s;
+}
+.crit-list li:hover { border-color:#bfdbfe; background:#eff6ff; }
+.crit-list li .ico { font-size:.95rem; flex-shrink:0; margin-top:1px; }
+.crit-list li strong { color:#0f172a; }
+.crit-list li.ok { border-color:#bbf7d0; background:#f0fdf4; }
+.crit-list li.bad { border-color:#fca5a5; background:#fef2f2; }
+
+/* Match analysis */
+.match-badge {
+  display:inline-flex; align-items:center; gap:6px; padding:5px 14px;
+  border-radius:999px; font-size:.78rem; font-weight:700; margin-bottom:14px;
+}
+.match-badge.hi { background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; }
+.match-badge.lo { background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; }
+
+/* Documents */
+.doc-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.doc-item {
+  display:flex; align-items:center; gap:10px; padding:11px 14px;
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:9px;
+  font-size:.84rem; color:#334155; transition:.15s;
+}
+.doc-item:hover { border-color:#bfdbfe; background:#eff6ff; }
+.doc-icon { font-size:1rem; flex-shrink:0; }
+.doc-tip { display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; font-size:.8rem; color:#92400e; }
+
+/* Partner types */
+.ptype-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.ptype-card {
+  display:flex; align-items:center; gap:10px; padding:12px 14px;
+  border:1.5px solid #e2e8f0; border-radius:10px; transition:.15s;
+}
+.ptype-card:hover { border-color:var(--navy-lt); background:#f8fafc; }
+.ptype-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.ptype-name { font-size:.84rem; font-weight:700; color:#0f172a; }
+.ptype-abbr { font-size:.7rem; color:#94a3b8; }
+
+/* EMI Calculator card (left col below tabs) */
+.emi-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-sm); }
+.emi-card-hdr {
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy));
+  padding:16px 22px; display:flex; align-items:center; gap:10px;
+}
+.emi-card-hdr h4 { font-size:.92rem; font-weight:700; color:#fff; }
+.emi-card-body { padding:20px 22px; }
+
+.calc-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+@media(max-width:500px){ .calc-row{ grid-template-columns:1fr; } }
+.calc-group {}
+.calc-lbl { font-size:.78rem; font-weight:700; color:#334155; margin-bottom:6px; display:flex; justify-content:space-between; }
+.calc-lbl .val { color:var(--navy); font-size:.85rem; }
+input[type=range].slider {
+  width:100%; height:5px; accent-color:var(--navy); cursor:pointer;
+  border-radius:999px;
+}
+.range-tips { display:flex; justify-content:space-between; font-size:.65rem; color:#94a3b8; margin-top:3px; }
+
+.tenure-row { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-bottom:16px; }
+.tb {
+  padding:8px 4px; background:#f8fafc; border:1.5px solid #e2e8f0;
+  border-radius:8px; color:#64748b; font-size:.78rem; font-weight:700;
+  cursor:pointer; text-align:center; transition:.15s; font-family:inherit;
+}
+.tb:hover { border-color:var(--navy); color:var(--navy); background:#eff6ff; }
+.tb.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+.emi-result-box {
+  background:linear-gradient(135deg,var(--navy),var(--navy-lt));
+  border-radius:12px; padding:18px; text-align:center; margin-bottom:14px;
+}
+.emi-main { font-size:2.2rem; font-weight:900; color:#fff; line-height:1.1; }
+.emi-sub  { font-size:.68rem; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.4px; margin-top:4px; }
+.emi-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.emi-stat {
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:9px; padding:10px 12px;
+}
+.emi-stat .k { font-size:.63rem; text-transform:uppercase; color:#94a3b8; letter-spacing:.3px; }
+.emi-stat .v { font-weight:800; color:#0f172a; font-size:.88rem; margin-top:2px; }
+.emi-save-box {
+  background:#f0fdf4; border:1px solid #bbf7d0; border-radius:9px;
+  padding:9px 12px; text-align:center; font-size:.78rem; color:#16a34a; font-weight:700; margin-top:10px;
+}
+
+/* ── Right column: sticky EMI sidebar ── */
+.emi-sidebar {
+  background:linear-gradient(145deg,var(--navy-dk),var(--navy));
+  border-radius:var(--r-lg); padding:24px; color:#fff;
+  position:sticky; top:84px; box-shadow:var(--sh-lg);
+}
+.emi-sidebar h3 { font-size:.95rem; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+.esi-slg { margin-bottom:16px; }
+.esi-lbl { display:flex; justify-content:space-between; font-size:.75rem; color:rgba(255,255,255,.65); margin-bottom:7px; }
+.esi-lbl strong { color:#fff; font-size:.88rem; }
+input[type=range].slider-white { width:100%; height:5px; accent-color:var(--saffron); cursor:pointer; }
+.side-tenure { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:16px; }
+.stb {
+  padding:7px 4px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  border-radius:7px; color:rgba(255,255,255,.65); font-size:.74rem; font-weight:700;
+  cursor:pointer; text-align:center; transition:.15s; font-family:inherit;
+}
+.stb:hover,.stb.on { background:var(--saffron); border-color:var(--saffron); color:#fff; }
+.esi-result { background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:16px; text-align:center; margin-bottom:12px; }
+.esi-amt  { font-size:2rem; font-weight:900; color:#fff; line-height:1; }
+.esi-tag  { font-size:.65rem; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.4px; margin-top:5px; }
+.esi-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.esi-gi .k { font-size:.62rem; color:rgba(255,255,255,.45); text-transform:uppercase; }
+.esi-gi .v { font-weight:700; color:rgba(255,255,255,.85); font-size:.82rem; }
+.esi-save { background:rgba(22,163,74,.18); border:1px solid rgba(22,163,74,.3); border-radius:8px; padding:9px 12px; font-size:.75rem; color:#86efac; text-align:center; margin-top:10px; }
+
+/* Quick apply card */
+.quick-apply {
+  background:#fff; border:1px solid #e2e8f0; border-radius:var(--r-lg);
+  padding:20px; margin-top:16px; box-shadow:var(--sh-sm);
+}
+.quick-apply h4 { font-size:.88rem; font-weight:700; color:#0f172a; margin-bottom:6px; }
+.quick-apply p  { font-size:.78rem; color:#64748b; line-height:1.6; margin-bottom:14px; }
+
+/* ── Geo Section ── */
+.geo-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-sm); }
+.geo-hdr { padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.geo-hdr-left h4 { font-size:.92rem; font-weight:700; color:#0f172a; }
+.geo-hdr-left p  { font-size:.72rem; color:#94a3b8; margin-top:2px; }
+#pmap { height:280px; width:100%; }
+.partner-list { padding:12px; display:flex; flex-direction:column; gap:7px; max-height:260px; overflow-y:auto; }
+.pitem {
+  display:flex; gap:10px; align-items:center; padding:10px 12px;
+  border:1px solid #e2e8f0; border-radius:10px; cursor:pointer; transition:.15s;
+}
+.pitem:hover { border-color:var(--navy-lt); background:#f8fafc; transform:translateX(2px); }
+.p-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.p-name { font-size:.82rem; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.p-meta { font-size:.71rem; color:#94a3b8; }
+.p-dist { font-size:.74rem; font-weight:800; color:var(--navy); margin-left:auto; white-space:nowrap; background:#eff6ff; padding:3px 9px; border-radius:999px; }
+
+/* ── Apply Bar ── */
+.apply-bar {
+  position:fixed; bottom:0; left:0; right:0; z-index:900;
+  background:#fff; border-top:1px solid #e2e8f0;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+  height:var(--apply-bar-h); display:flex; align-items:center;
+  padding:0 24px; gap:16px; justify-content:space-between;
+}
+.apply-info {}
+.apply-info .name { font-weight:800; color:#0f172a; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:50vw; }
+.apply-info .meta { font-size:.72rem; color:#64748b; margin-top:1px; }
+.apply-btns { display:flex; gap:10px; flex-shrink:0; }
+@media(max-width:580px){
+  .apply-bar { flex-direction:column; height:auto; padding:12px 16px; }
+  .apply-info .name { max-width:100%; }
+  .apply-btns { width:100%; }
+  .apply-btns .btn { flex:1; justify-content:center; }
+  :root { --apply-bar-h: 110px; }
+}
+
+/* Loading state in hero */
+.hero-loading .skel-line {
+  background:linear-gradient(90deg,rgba(255,255,255,.08) 25%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.08) 75%);
+  background-size:400% 100%; animation:shimmer 1.4s ease infinite;
+}
+
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* Spinner for map loading */
+.map-loading {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:120px; gap:10px; color:#94a3b8; font-size:.84rem;
+}
+.map-spin {
+  width:22px; height:22px; border:3px solid #e2e8f0; border-top-color:var(--navy);
+  border-radius:50%; animation:rot .7s linear infinite;
+}
+
+/* No-JS or error state */
+.error-banner {
+  background:#fee2e2; border:1px solid #fca5a5; border-radius:10px;
+  padding:14px 18px; font-size:.85rem; color:#b91c1c; display:flex; gap:10px; align-items:center;
+  margin-bottom:16px;
+}
+</style>
+</head>
+<body>
+<div id="google_translate_element"></div>
+<div class="tc"></div>
+
+<!-- Gov Bar -->
+<div class="gov-bar">
+  <span>&#x1F1EE;&#x1F1F3; <strong>Ministry of Social Justice &amp; Empowerment</strong> — NSFDC</span>
+  <span>SIH 2026 | Problem 26092</span>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar" id="nav">
+  <div class="nb-inner">
+    <a href="index.html" class="nb-brand">
+      <div class="nb-icon">US</div>
+      <div><div class="nb-title">Udyam Saarthi</div><div class="nb-sub">MoSJE · NSFDC</div></div>
+    </a>
+    <div class="nb-links">
+      <a href="index.html"                    class="nb-link">&#x1F3E0; Home</a>
+      <a href="schemes.html?cat=schemes"      class="nb-link">&#x1F4CB; Schemes</a>
+      <a href="schemes.html?cat=micro_finance" class="nb-link">&#x1F4BC; Micro Finance</a>
+      <a href="schemes.html?cat=loans"        class="nb-link">&#x1F3E6; Loans</a>
+    </div>
+    <div class="nb-profile" style="margin-left:auto;flex-shrink:0;position:relative">
+      <div class="prof-btn" id="profBtn" onclick="toggleDrop()"><span id="profInit">&#x1F464;</span></div>
+      <div class="prof-drop" id="profDrop">
+        <div class="pd-header">
+          <div class="pd-name"  id="pdName">—</div>
+          <div class="pd-phone" id="pdPhone">—</div>
+        </div>
+        <a href="profile.html" class="pd-item">&#x1F464; My Profile</a>
+        <div class="divider" style="margin:0"></div>
+        <button class="pd-item red" onclick="logout()">&#x1F6AA; Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── DETAIL HERO ── -->
+<div class="detail-hero" id="detailHero">
+  <div class="dh-inner">
+    <!-- Breadcrumb -->
+    <nav class="bcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">&#xFE65;</span>
+      <a href="schemes.html">Schemes</a>
+      <span class="sep">&#xFE65;</span>
+      <span id="bcScheme">Loading&hellip;</span>
+    </nav>
+    <!-- Title row -->
+    <div class="dh-row">
+      <div class="dh-icon-wrap" id="dhIcon">&#x1F4CB;</div>
+      <div class="dh-info">
+        <div class="dh-badge-row">
+          <span class="dh-badge" id="dhBadge">&hellip;</span>
+          <span class="dh-cat-badge" id="dhCat"></span>
+        </div>
+        <h1 class="dh-name" id="dhName">Loading&hellip;</h1>
+        <p  class="dh-desc" id="dhDesc">—</p>
+      </div>
+    </div>
+    <!-- Key metrics -->
+    <div class="dh-metrics" id="dhMetrics">
+      <div class="dm"><div class="v" id="mLoan">—</div><div class="l">Max Loan</div></div>
+      <div class="dm highlight"><div class="v" id="mRate">—</div><div class="l">Interest p.a.</div></div>
+      <div class="dm"><div class="v" id="mCov">—</div><div class="l">Loan Coverage</div></div>
+      <div class="dm"><div class="v" id="mTen">—</div><div class="l">Max Tenure</div></div>
+      <div class="dm"><div class="v" id="mMoro">—</div><div class="l">Moratorium</div></div>
+      <div class="dm subsidy" id="mSubsidyWrap" style="display:none"><div class="v" id="mSubsidy">—</div><div class="l">Capital Subsidy</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL BODY ── -->
+<div class="detail-wrap">
+
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+
+    <!-- Tabs card -->
+    <div class="tabs-card">
+      <div class="dtabs" role="tablist">
+        <button class="dtab on" role="tab" aria-selected="true"  onclick="showTab('overview',this)">&#x1F4C3; Overview</button>
+        <button class="dtab"    role="tab" aria-selected="false" onclick="showTab('eligibility',this)">&#x2705; Eligibility</button>
+        <button class="dtab"    role="tab" aria-selected="false" onclick="showTab('documents',this)">&#x1F4C1; Documents</button>
+        <button class="dtab"    role="tab" aria-selected="false" onclick="showTab('partners',this)">&#x1F3E6; Channel Partners</button>
+      </div>
+
+      <!-- TAB: Overview -->
+      <div class="tab-pane on" id="tab-overview" role="tabpanel">
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F3AF;</span>Target Beneficiaries</div>
+          <p id="target" style="font-size:.87rem;color:#334155;line-height:1.75;margin-bottom:14px"></p>
+          <div class="tag-list" id="purposes"></div>
+        </div>
+
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F4B9;</span>Financial Details</div>
+          <div class="fin-grid" id="finGrid"></div>
+        </div>
+
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F1EE;&#x1F1F3;</span>Description (हिंदी)</div>
+          <div class="hindi-block" id="descHi"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Eligibility -->
+      <div class="tab-pane" id="tab-eligibility" role="tabpanel">
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x2705;</span>Eligibility Criteria</div>
+          <ul class="crit-list" id="critList"></ul>
+        </div>
+        <div class="tsec" id="matchSec" style="display:none">
+          <div class="tsec-title"><span class="ico">&#x1F9E0;</span>Your Eligibility Check</div>
+          <div id="matchContent"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Documents -->
+      <div class="tab-pane" id="tab-documents" role="tabpanel">
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F4C1;</span>Required Documents</div>
+          <p style="font-size:.8rem;color:#94a3b8;margin-bottom:12px">Arrange these before visiting a Channel Partner branch.</p>
+          <ul class="doc-list" id="docList"></ul>
+        </div>
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F4A1;</span>Document Tips</div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div class="doc-tip"><span>&#x1F4CC;</span>SC Caste Certificate must be issued by SDM / Tehsildar / MRO.</div>
+            <div class="doc-tip"><span>&#x1F4CC;</span>Income Certificate must be from the current financial year.</div>
+            <div class="doc-tip"><span>&#x1F4CC;</span>Aadhaar must be linked to your active bank account.</div>
+            <div class="doc-tip"><span>&#x1F4CC;</span>Project cost estimates should be on vendor letterhead.</div>
+            <div class="doc-tip"><span>&#x1F4CC;</span>Keep self-attested photocopies of all originals ready.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Channel Partners -->
+      <div class="tab-pane" id="tab-partners" role="tabpanel">
+        <div class="tsec">
+          <div class="tsec-title"><span class="ico">&#x1F3E6;</span>Eligible Channel Partner Types</div>
+          <div class="ptype-grid" id="ptypes"></div>
+          <p style="font-size:.8rem;color:#64748b;line-height:1.65;margin-top:14px;padding:12px;background:#f8fafc;border-radius:9px;border:1px solid #e2e8f0">
+            Funds are routed <em>exclusively through</em> authorised Channel Partners. Direct applications to NSFDC are not accepted. Use the map below to find your nearest branch.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMI Calculator (inline, below tabs) -->
+    <div class="emi-card">
+      <div class="emi-card-hdr">
+        <span style="font-size:1.1rem">&#x1F9EE;</span>
+        <h4>EMI Calculator</h4>
+      </div>
+      <div class="emi-card-body">
+        <div class="calc-row">
+          <div class="calc-group">
+            <div class="calc-lbl">Loan Amount <span class="val" id="loanVal">&#x20B9;1,00,000</span></div>
+            <input type="range" class="slider" id="lSlider" min="10000" max="2500000" step="5000" value="100000" oninput="calcEmi()"/>
+            <div class="range-tips"><span>&#x20B910K</span><span>&#x20B925L</span></div>
+          </div>
+          <div class="calc-group">
+            <div class="calc-lbl">Interest Rate <span class="val" id="rateVal">6.5%</span></div>
+            <input type="range" class="slider" id="rSlider" min="3" max="12" step="0.5" value="6.5" oninput="calcEmi()"/>
+            <div class="range-tips"><span>3%</span><span>12%</span></div>
+          </div>
+        </div>
+        <div style="font-size:.78rem;font-weight:700;color:#334155;margin-bottom:8px">Repayment Tenure</div>
+        <div class="tenure-row" id="tenureBtns">
+          <button class="tb"    onclick="setTen(1,this)">1 yr</button>
+          <button class="tb on" onclick="setTen(2,this)">2 yrs</button>
+          <button class="tb"    onclick="setTen(5,this)">5 yrs</button>
+          <button class="tb"    onclick="setTen(10,this)">10 yrs</button>
+        </div>
+        <div class="emi-result-box">
+          <div class="emi-main" id="emiAmt">&#x20B94,450</div>
+          <div class="emi-sub">Monthly EMI</div>
+        </div>
+        <div class="emi-stats">
+          <div class="emi-stat"><div class="k">Total Payment</div><div class="v" id="emiTotal">—</div></div>
+          <div class="emi-stat"><div class="k">Total Interest</div><div class="v" id="emiInt">—</div></div>
+        </div>
+        <div class="emi-save-box" id="emiSave"></div>
+      </div>
+    </div>
+
+    <!-- Nearby Channel Partners -->
+    <div class="geo-card">
+      <div class="geo-hdr">
+        <div class="geo-hdr-left">
+          <h4>&#x1F4CD; Nearby Channel Partners</h4>
+          <p id="geoLbl">Based on your registered address</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="detectGeo()">&#x1F4E1; Use My Location</button>
+      </div>
+      <div id="pmap" style="height:280px;width:100%"></div>
+      <div class="partner-list" id="partnerList">
+        <div class="map-loading"><div class="map-spin"></div>Finding nearby partners&hellip;</div>
+      </div>
+    </div>
+
+  </div><!-- /left-col -->
+
+
+
+</div><!-- /detail-wrap -->
+
+<!-- ── Apply Bar (bottom) ── -->
+<div class="apply-bar">
+  <div class="apply-info">
+    <div class="name" id="applyName">—</div>
+    <div class="meta" id="applyMeta">—</div>
+  </div>
+  <div class="apply-btns">
+    <a href="schemes.html" class="btn btn-ghost btn-sm">&#x2190; Back</a>
+    <button class="btn btn-saffron" onclick="applyNow()">Apply via Channel Partner &#x2192;</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Fix: use window.location.origin so it works on any port (8000, 5500, etc.)
+const API = (window.location.origin && /^https?:/.test(window.location.origin))
+  ? window.location.origin : 'http://127.0.0.1:8000';
+
+let scheme = null, map = null, tenYears = 2;
+let uLat = 28.6139, uLng = 77.2090;
+let userProfile = null;
+const schemeId = new URLSearchParams(window.location.search).get('id');
+
+// ── Auth guard ──
+(function(){
+  const s = localStorage.getItem('cf_session');
+  if(!s){ window.location.href='sign-in.html'; return; }
+  try {
+    const sess = JSON.parse(s);
+    if(!sess.token){ window.location.href='sign-in.html'; return; }
+    document.getElementById('profInit').textContent = (sess.username||'?')[0].toUpperCase();
+    document.getElementById('pdName').textContent   = sess.username;
+    document.getElementById('pdPhone').textContent  = sess.phone;
+  } catch(e){ window.location.href='sign-in.html'; }
+  const p = localStorage.getItem('cf_profile');
+  if(p) try { userProfile = JSON.parse(p); } catch(e){}
+})();
+
+loadScheme();
+
+async function loadScheme(){
+  if(!schemeId){ window.location.href='schemes.html'; return; }
+  try {
+    const r = await fetch(API+'/schemes');
+    const d = await r.json();
+    const all = d.schemes||d||[];
+    scheme = all.find(s => s.id === schemeId);
+    if(!scheme) throw new Error('Scheme not found');
+    renderDetail(scheme);
+    initCalc(scheme);
+    initGeo(scheme);
+  } catch(err){
+    document.getElementById('dhName').textContent = '⚠️ ' + err.message;
+    document.getElementById('dhDesc').textContent = 'Please go back and try again.';
+  }
+}
+
+// Category metadata
+const catMeta = {
+  micro_credit:       { icon:'💰', label:'Micro Credit' },
+  women_empowerment:  { icon:'👩‍💼', label:'Women Empowerment' },
+  term_loan:          { icon:'🏢', label:'Term Loan' },
+  education:          { icon:'🎓', label:'Education' },
+  sanitation_enterprise:{ icon:'🚿', label:'Sanitation Enterprise' },
+  green_business:     { icon:'☀️', label:'Green Business' },
+};
+
+const ptMeta = {
+  SCA:     { label:'State Channelizing Agency', color:'#0f2167' },
+  PSB:     { label:'Public Sector Bank',        color:'#ea580c' },
+  RRB:     { label:'Regional Rural Bank',       color:'#16a34a' },
+  NBFC_MFI:{ label:'NBFC-MFI',                 color:'#7c3aed' },
+};
+
+function renderDetail(s){
+  const meta    = catMeta[s.category] || { icon:'📋', label: s.category };
+  const rate    = s.interest_rate_female < s.interest_rate_male
+                  ? `${s.interest_rate_female}–${s.interest_rate_male}%`
+                  : `${s.interest_rate_male}%`;
+  const maxLoan = s.max_project_cost * (s.max_loan_percentage||90) / 100;
+  const moro    = `${s.moratorium_months_min||3}–${s.moratorium_months_max||6} mo`;
+
+  document.title = s.name + ' — MoSJE Udyam Saarthi';
+  document.getElementById('bcScheme').textContent  = s.short_code;
+  document.getElementById('dhIcon').textContent    = meta.icon;
+  document.getElementById('dhBadge').textContent   = s.badge || s.short_code;
+  document.getElementById('dhCat').textContent     = meta.label;
+  document.getElementById('dhName').textContent    = s.name;
+  document.getElementById('dhDesc').textContent    = s.description_en || '';
+
+  // Metrics
+  document.getElementById('mLoan').textContent = '₹'+(maxLoan/100000).toFixed(1)+'L';
+  document.getElementById('mRate').textContent = rate;
+  document.getElementById('mCov').textContent  = (s.max_loan_percentage||90)+'%';
+  document.getElementById('mTen').textContent  = (s.max_tenure_years||5)+' yrs';
+  document.getElementById('mMoro').textContent = moro;
+  if(s.capital_subsidy_max > 0){
+    document.getElementById('mSubsidyWrap').style.display = '';
+    document.getElementById('mSubsidy').textContent = '₹'+(s.capital_subsidy_max/100000).toFixed(1)+'L ('+s.subsidy_percentage+'%)';
+  }
+
+  // Apply bar
+  document.getElementById('applyName').textContent = s.name;
+  document.getElementById('applyMeta').textContent = `${s.short_code} · ${rate} p.a. · Max ₹${(maxLoan/100000).toFixed(1)}L · ${s.max_tenure_years} yr tenure`;
+
+  // Overview: target & purposes
+  document.getElementById('target').textContent = s.target_beneficiary || '—';
+  document.getElementById('purposes').innerHTML = (s.eligible_purposes||[])
+    .map(p => `<span class="tag">${p.replace(/_/g,' ')}</span>`).join('');
+  document.getElementById('descHi').textContent = s.description_hi || '—';
+
+  // Financial grid
+  const finRows = [
+    { k:'Min Project Cost', v:`₹${(s.min_project_cost||0).toLocaleString()}`, cls:'' },
+    { k:'Max Project Cost', v:`₹${(s.max_project_cost||0).toLocaleString()}`, cls:'' },
+    { k:'Max Loan Amount',  v:`₹${maxLoan.toLocaleString()}`, cls:'accent' },
+    { k:'Loan Coverage',    v:`${s.max_loan_percentage||90}% of cost`, cls:'' },
+    { k:'Interest — Male',  v:`${s.interest_rate_male}% p.a.`, cls:'' },
+    { k:'Interest — Female',v:`${s.interest_rate_female}% p.a.`, cls:'green' },
+    { k:'Capital Subsidy',  v: s.capital_subsidy_max>0 ? '₹'+s.capital_subsidy_max.toLocaleString()+' ('+s.subsidy_percentage+'%)' : 'None', cls: s.capital_subsidy_max>0 ? 'orange':''},
+    { k:'Moratorium',       v: moro, cls:'' },
+    { k:'Max Tenure',       v:`${s.max_tenure_years||5} years`, cls:'' },
+    { k:'Income Limit',     v:`₹${(s.family_income_limit||500000).toLocaleString()}`, cls:'' },
+  ];
+  document.getElementById('finGrid').innerHTML = finRows.map(r =>
+    `<div class="fin-item ${r.cls}"><div class="k">${r.k}</div><div class="v">${r.v}</div></div>`
+  ).join('');
+
+  // Eligibility
+  const crit = [
+    ['🏷️','Caste Eligibility','Scheduled Caste (SC) — Mandatory'],
+    ['💰','Annual Family Income',`Maximum ₹${(s.family_income_limit||500000).toLocaleString()}`],
+    ['💼','Eligible Activities',`${(s.eligible_purposes||[]).map(p=>p.replace(/_/g,' ')).join(', ')}`],
+    ['📋','Promoter Contribution',`Minimum ${s.promoter_contribution_min||10}% of project cost`],
+    ['🏦','Channel Partners',`${(s.channel_partner_types||[]).join(', ')}`],
+    ['🚫','Direct Application','Not accepted — apply only via authorised Channel Partner'],
+    ['🆔','Identity Documents','Valid Aadhaar + SC Caste Certificate (SDM/Tehsildar issued)'],
+    ['📍','Residency','Indian citizen with valid state domicile'],
+  ];
+  document.getElementById('critList').innerHTML = crit.map(([ico,k,v]) =>
+    `<li><span class="ico">${ico}</span><div><strong>${k}:</strong> ${v}</div></li>`
+  ).join('');
+
+  // Personal match analysis
+  if(userProfile && userProfile.income){
+    const income = parseFloat(userProfile.income), limit = s.family_income_limit||500000;
+    const checks = [
+      { ok: userProfile.caste==='SC',      text:`Caste: ${userProfile.caste||'?'} — ${userProfile.caste==='SC'?'Eligible (SC)':'SC only'}` },
+      { ok: income<=limit,                  text:`Income: ₹${income.toLocaleString()} — ${income<=limit?'Within limit':'Exceeds ₹'+limit.toLocaleString()}` },
+      { ok: userProfile.gender==='female', text:`Rate: ${userProfile.gender==='female'?'Female rate '+s.interest_rate_female+'% p.a.':'Male rate '+s.interest_rate_male+'% p.a.'}` },
+    ];
+    const eligibleCount = checks.filter(c=>c.ok).length;
+    document.getElementById('matchSec').style.display = '';
+    document.getElementById('matchContent').innerHTML =
+      `<div class="match-badge ${eligibleCount===3?'hi':'lo'}">${eligibleCount===3?'✅ Fully Eligible':'⚠️ '+eligibleCount+'/3 Criteria Met'}</div>`+
+      `<ul class="crit-list">${checks.map(c=>`<li class="${c.ok?'ok':'bad'}"><span class="ico">${c.ok?'✅':'❌'}</span><div>${c.text}</div></li>`).join('')}</ul>`;
+  }
+
+  // Documents
+  document.getElementById('docList').innerHTML = (s.required_documents||[])
+    .map(d => `<li class="doc-item"><span class="doc-icon">📄</span>${d}</li>`).join('');
+
+  // Partner types
+  document.getElementById('ptypes').innerHTML = (s.channel_partner_types||[]).map(t => {
+    const m = ptMeta[t] || { label:t, color:'#475569' };
+    return `<div class="ptype-card">
+      <div class="ptype-dot" style="background:${m.color}"></div>
+      <div><div class="ptype-name">${m.label}</div><div class="ptype-abbr">${t}</div></div>
+    </div>`;
+  }).join('');
+
+  if(window.retranslateDynamicContent) setTimeout(window.retranslateDynamicContent, 80);
+}
+
+// ── Tabs ──
+function showTab(id, btn){
+  document.querySelectorAll('.dtab').forEach(t => { t.classList.remove('on'); t.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on'); btn.setAttribute('aria-selected','true');
+  document.getElementById('tab-'+id).classList.add('on');
+}
+
+// ── EMI ──
+function fmt(n){
+  if(n>=100000) return '₹'+(n/100000).toFixed(2)+'L';
+  if(n>=1000)   return '₹'+(n/1000).toFixed(1)+'K';
+  return '₹'+Math.round(n).toLocaleString();
+}
+
+function initCalc(s){
+  const max = Math.min(s.max_project_cost*(s.max_loan_percentage||90)/100, 2500000);
+  const rate = s.interest_rate_male || 6.5;
+  const lSlider = document.getElementById('lSlider'); lSlider.max=max; lSlider.value=Math.min(100000,max);
+  document.getElementById('rSlider').value = rate;
+  calcEmi();
+}
+
+function setTen(yr,btn){ tenYears=yr; document.querySelectorAll('#tenureBtns .tb').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); calcEmi(); }
+
+function calcEmi(){
+  const P=+document.getElementById('lSlider').value, r=+document.getElementById('rSlider').value;
+  document.getElementById('loanVal').textContent = fmt(P);
+  document.getElementById('rateVal').textContent = r.toFixed(1)+'%';
+  const res = computeEmi(P,r,tenYears);
+  document.getElementById('emiAmt').textContent   = '₹'+Math.round(res.emi).toLocaleString();
+  document.getElementById('emiTotal').textContent = fmt(res.total);
+  document.getElementById('emiInt').textContent   = fmt(res.interest);
+  document.getElementById('emiSave').textContent  = '💚 You save '+fmt(res.savings)+' vs market rate (12%)';
+}
+
+function computeEmi(P,r,yrs){
+  const n=yrs*12, mr=r/100/12;
+  const emi = mr===0 ? P/n : P*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);
+  const total=emi*n, interest=total-P;
+  const mkt=12/100/12, mEmi=P*mkt*Math.pow(1+mkt,n)/(Math.pow(1+mkt,n)-1);
+  return { emi, total, interest, savings: mEmi*n - total };
+}
+
+// ── Geo ──
+function initGeo(s){
+  if(userProfile && userProfile.pincode) geocodePin(userProfile.pincode, s);
+  else { startMap(uLat,uLng,s); loadPartners(uLat,uLng,s); }
+}
+
+async function geocodePin(pin,s){
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${pin}&country=India&format=json&limit=1`);
+    const d = await r.json();
+    if(d.length){ uLat=parseFloat(d[0].lat); uLng=parseFloat(d[0].lon); document.getElementById('geoLbl').textContent='Based on pincode '+pin; }
+  } catch(e){}
+  startMap(uLat,uLng,s); loadPartners(uLat,uLng,s);
+}
+
+function startMap(lat,lng,s){
+  if(map){ map.remove(); map=null; }
+  map = L.map('pmap',{zoomControl:true}).setView([lat,lng],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
+  L.circleMarker([lat,lng],{radius:10,fillColor:'#0f2167',fillOpacity:1,color:'#fff',weight:3,className:'you-marker'})
+   .addTo(map).bindPopup('<strong>📍 Your Location</strong>');
+}
+
+async function loadPartners(lat,lng,s){
+  try {
+    const r = await fetch(`${API}/partners/route?lat=${lat}&lng=${lng}&scheme_id=${s.id}&limit=8`);
+    const d = await r.json();
+    renderPartners(d.partners||[], lat, lng);
+  } catch(e){
+    renderPartners(mockPartners(lat,lng,s), lat, lng);
+  }
+}
+
+function mockPartners(lat,lng,s){
+  const types = s.channel_partner_types||['SCA','RRB','PSB'];
+  return Array.from({length:6},(_,i) => {
+    const t=types[i%types.length], dist=+(0.5+Math.random()*4).toFixed(1);
+    const m = ptMeta[t]||{label:t,color:'#475569'};
+    return { id:'P'+i, name:`${m.label} — Branch ${i+1}`, partner_type:t,
+             latitude:lat+(Math.random()-.5)*.14, longitude:lng+(Math.random()-.5)*.14,
+             distance_km:dist, address:`Branch, ~${dist} km away` };
+  });
+}
+
+function renderPartners(partners,lat,lng){
+  const list = document.getElementById('partnerList');
+  partners.sort((a,b)=>(a.distance_km||0)-(b.distance_km||0));
+  if(map){
+    partners.forEach((p,i) => {
+      if(!p.latitude||!p.longitude) return;
+      const m = ptMeta[p.partner_type]||{color:'#475569'};
+      const ico = L.divIcon({ html:`<div style="background:${m.color};color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)">${i+1}</div>`, className:'', iconSize:[28,28], iconAnchor:[14,14] });
+      L.marker([p.latitude,p.longitude],{icon:ico}).addTo(map).bindPopup(`<strong>${p.name}</strong><br>${parseFloat(p.distance_km||0).toFixed(1)} km away`);
+    });
+  }
+  if(!partners.length){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8;font-size:.84rem">No partners found near your location.</div>';
+    return;
+  }
+  list.innerHTML = partners.map((p,i) => {
+    const m = ptMeta[p.partner_type]||{color:'#475569',label:p.partner_type};
+    return `<div class="pitem" onclick="flyTo(${p.latitude},${p.longitude})">
+      <div class="p-icon" style="background:${m.color}18;color:${m.color}">&#x1F3E6;</div>
+      <div style="flex:1;min-width:0">
+        <div class="p-name">${i+1}. ${p.name}</div>
+        <div class="p-meta">${m.label} · ${p.address||'Nearby'}</div>
+      </div>
+      <div class="p-dist">${parseFloat(p.distance_km||0).toFixed(1)} km</div>
+    </div>`;
+  }).join('');
+  if(window.retranslateDynamicContent) setTimeout(window.retranslateDynamicContent, 80);
+}
+
+function flyTo(lat,lng){ if(map) map.flyTo([lat,lng],14,{duration:1}); }
+
+function detectGeo(){
+  if(!navigator.geolocation){ alert('Geolocation not supported by your browser.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    uLat=pos.coords.latitude; uLng=pos.coords.longitude;
+    document.getElementById('geoLbl').textContent = 'Using your live GPS location';
+    startMap(uLat,uLng,scheme); loadPartners(uLat,uLng,scheme);
+  }, () => alert('Location access denied. Please allow location permission.'));
+}
+
+function applyNow(){
+  const pts = (scheme?.channel_partner_types||[]).map(t => ptMeta[t]?.label||t).join(', ');
+  alert('This prototype does not submit live applications.\n\nVisit your nearest Channel Partner:\n' + pts + '\n\nBring all documents listed in the Documents tab.');
+}
+
+function toggleDrop(){ document.getElementById('profDrop').classList.toggle('open'); }
+document.addEventListener('click', e => {
+  if(!document.getElementById('nav').contains(e.target))
+    document.getElementById('profDrop').classList.remove('open');
+});
+function logout(){ localStorage.removeItem('cf_session'); window.location.href='sign-in.html'; }
+</script>
+</body>
+</html>
