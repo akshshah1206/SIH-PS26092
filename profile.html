@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Profile — MoSJE Udyam Saarthi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/main.css"/>
+<script src="js/i18n.js"></script>
+</head>
+<body>
+<div id="google_translate_element"></div>
+<div class="tc"></div>
+<div class="gov-bar">
+  <span>🇮🇳 <strong>Ministry of Social Justice &amp; Empowerment</strong> — NSFDC</span>
+  <span>SIH 2026 | Problem 26092</span>
+</div>
+
+<nav class="navbar" id="nav">
+  <div class="nb-inner">
+    <a href="index.html" class="nb-brand">
+      <div class="nb-icon">CF</div>
+      <div><div class="nb-title">Udyam Saarthi</div><div class="nb-sub">MoSJE · NSFDC</div></div>
+    </a>
+    <div class="nb-links">
+      <a href="index.html"                      class="nb-link" data-i18n="nav.home">🏠 Home</a>
+      <a href="schemes.html?cat=schemes"         class="nb-link" data-i18n="nav.schemes">📋 Schemes</a>
+      <a href="schemes.html?cat=micro_finance"   class="nb-link" data-i18n="nav.micro">💼 Micro Finance</a>
+      <a href="schemes.html?cat=loans"           class="nb-link" data-i18n="nav.loans">🏦 Loans</a>
+    </div>
+    <div class="nb-profile">
+      <div class="prof-btn" id="profBtn" onclick="toggleDrop()"><span id="profInit">👤</span></div>
+      <div class="prof-drop" id="profDrop">
+        <div class="pd-header">
+          <div class="pd-name"  id="pdName">—</div>
+          <div class="pd-phone" id="pdPhone">—</div>
+        </div>
+        <a href="profile.html" class="pd-item" data-i18n="drop.profile">👤 My Profile</a>
+        <div class="divider" style="margin:0"></div>
+        <button class="pd-item red" onclick="logout()" data-i18n="drop.logout">🚪 Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- PROFILE HEADER -->
+<div class="prof-hero">
+  <div class="container">
+    <div class="p-av" id="pAv">👤</div>
+    <div class="p-name" id="pName" data-i18n="prof.title">Your Profile</div>
+    <div class="p-meta2" id="pMeta" data-i18n="prof.sub">Fill your details to get personalized scheme matches</div>
+    <div class="pbar-wrap">
+      <div class="pbar-lbl"><span data-i18n="prof.complete">Profile Completeness</span><span id="pPct">0%</span></div>
+      <div class="pbar-bg"><div class="pbar-fill" id="pBar" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE FORM -->
+<div class="prof-body">
+
+  <!-- Personal -->
+  <div class="psec">
+    <div class="psec-hdr">👤 Personal Information</div>
+    <div class="g2">
+      <div class="fg"><label>Full Name *</label><input class="fc" id="fullName" placeholder="e.g. Ramesh Kumar Sharma" oninput="update()"/></div>
+      <div class="fg"><label>Gender *</label>
+        <select class="fc" id="gender" onchange="update()">
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other / Transgender</option>
+        </select>
+      </div>
+      <div class="fg"><label>Date of Birth *</label><input class="fc" id="dob" type="date" onchange="update()"/></div>
+      <div class="fg"><label>Caste Category *</label>
+        <select class="fc" id="caste" onchange="update()">
+          <option value="">Select Category</option>
+          <option value="SC">Scheduled Caste (SC)</option>
+          <option value="ST">Scheduled Tribe (ST)</option>
+          <option value="OBC">Other Backward Class (OBC)</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="psec">
+    <div class="psec-hdr">📍 Current Address</div>
+    <div class="fg" style="margin-bottom:14px"><label>Street / Village / Locality *</label><input class="fc" id="address" placeholder="e.g. 12, MG Road, Near Post Office" oninput="update()"/></div>
+    <div class="g2">
+      <div class="fg"><label>District *</label><input class="fc" id="district" placeholder="e.g. Varanasi" oninput="update()"/></div>
+      <div class="fg"><label>State *</label>
+        <select class="fc" id="state" onchange="update()">
+          <option value="">Select State</option>
+          <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
+          <option>Chhattisgarh</option><option>Delhi</option><option>Goa</option>
+          <option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+          <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option>
+          <option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option>
+          <option>Meghalaya</option><option>Odisha</option><option>Punjab</option>
+          <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
+          <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+          <option>J&amp;K</option>
+        </select>
+      </div>
+      <div class="fg"><label>Pincode *</label><input class="fc" id="pincode" type="tel" maxlength="6" placeholder="e.g. 221001" oninput="update()"/></div>
+      <div class="fg"><label>Aadhaar Last 4 Digits</label><input class="fc" id="aadhar" type="tel" maxlength="4" placeholder="XXXX"/><span class="fhint">Not stored — for reference only.</span></div>
+    </div>
+  </div>
+
+  <!-- Education & Income -->
+  <div class="psec">
+    <div class="psec-hdr">🎓 Education &amp; Income</div>
+    <div class="g2">
+      <div class="fg"><label>Educational Qualification *</label>
+        <select class="fc" id="education" onchange="update()">
+          <option value="">Select Qualification</option>
+          <option value="no_formal">No Formal Education</option>
+          <option value="primary">Primary (Up to 5th)</option>
+          <option value="middle">Middle School (Up to 8th)</option>
+          <option value="10th_pass">10th Pass (Matriculate)</option>
+          <option value="12th_pass">12th Pass (Intermediate)</option>
+          <option value="diploma">Diploma / ITI</option>
+          <option value="graduate">Graduate</option>
+          <option value="post_graduate">Post Graduate</option>
+          <option value="professional">Professional Degree</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Annual Family Income (₹) *</label>
+        <input class="fc" id="income" type="number" min="0" max="500000" step="1000" placeholder="e.g. 180000" oninput="update()"/>
+        <span class="fhint">Maximum eligible: ₹5,00,000</span>
+      </div>
+      <div class="fg"><label>Primary Occupation</label>
+        <select class="fc" id="occupation">
+          <option value="">Select Occupation</option>
+          <option value="agriculture">Agriculture / Farming</option>
+          <option value="daily_wage">Daily Wage Laborer</option>
+          <option value="self_employed">Self Employed</option>
+          <option value="salaried">Salaried (Private)</option>
+          <option value="artisan">Artisan / Craftsman</option>
+        </select>
+      </div>
+      <div class="fg"><label>Are You a Sanitation Worker?</label>
+        <select class="fc" id="sanitation">
+          <option value="no">No</option>
+          <option value="yes">Yes — Sewage / Scavenging Worker</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business Details -->
+  <div class="psec">
+    <div class="psec-hdr">💼 Business &amp; Enterprise Details</div>
+    <div class="g2">
+      <div class="fg"><label>Business Category *</label>
+        <select class="fc" id="businessCategory" onchange="update()">
+          <option value="">Select Category</option>
+          <option value="retail_shop">Retail Shop / Kirana</option>
+          <option value="tailoring">Tailoring / Stitching</option>
+          <option value="dairy_farming">Dairy Farming / Animal Husbandry</option>
+          <option value="handicrafts">Handicrafts / Artisan</option>
+          <option value="vegetable_vending">Vegetable / Fruit Vending</option>
+          <option value="repair_services">Repair Services</option>
+          <option value="small_poultry">Poultry / Piggery</option>
+          <option value="beauty_parlor">Beauty Parlor / Saloon</option>
+          <option value="weaving">Handloom / Weaving</option>
+          <option value="food_processing">Food Processing / Snacks</option>
+          <option value="manufacturing">Small Manufacturing</option>
+          <option value="solar">Solar / Green Energy</option>
+          <option value="education">Education / Coaching</option>
+          <option value="transport">Transport / Auto Services</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Business Status</label>
+        <select class="fc" id="businessStatus">
+          <option value="proposed">Proposed (Not Started)</option>
+          <option value="new">New (< 1 year)</option>
+          <option value="existing">Existing (1–3 years)</option>
+          <option value="established">Established (3+ years)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Current Monthly Revenue (₹)</label>
+        <input class="fc" id="currentRevenue" type="number" min="0" step="500" placeholder="e.g. 15000"/>
+        <span class="fhint">Enter 0 if not yet started.</span>
+      </div>
+      <div class="fg">
+        <label>Estimated Project / Loan Need (₹) *</label>
+        <input class="fc" id="projectCost" type="number" min="10000" step="5000" placeholder="e.g. 100000" oninput="update()"/>
+        <span class="fhint">Total cost of proposed business project.</span>
+      </div>
+      <div class="fg"><label>Business Location Type</label>
+        <select class="fc" id="bizLocation">
+          <option value="urban">Urban</option>
+          <option value="semi_urban">Semi-Urban</option>
+          <option value="rural">Rural / Village</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Number of Employees</label>
+        <input class="fc" id="employees" type="number" min="0" placeholder="e.g. 2"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Preferences -->
+  <div class="psec">
+    <div class="psec-hdr">🏦 Loan Preferences</div>
+    <div class="g2">
+      <div class="fg"><label>Preferred Repayment Tenure</label>
+        <select class="fc" id="tenure">
+          <option value="1">1 Year</option>
+          <option value="2">2 Years</option>
+          <option value="3">3 Years</option>
+          <option value="5" selected>5 Years</option>
+          <option value="7">7 Years</option>
+          <option value="10">10 Years</option>
+        </select>
+      </div>
+      <div class="fg"><label>Preferred Channel Partner</label>
+        <select class="fc" id="prefPartner">
+          <option value="">No Preference</option>
+          <option value="SCA">State Channelizing Agency (SCA)</option>
+          <option value="PSB">Public Sector Bank (PSB)</option>
+          <option value="RRB">Regional Rural Bank (RRB)</option>
+          <option value="NBFC_MFI">NBFC-MFI</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;padding-bottom:40px">
+    <a href="schemes.html" class="btn btn-ghost">Cancel</a>
+    <button class="btn btn-navy btn-lg" onclick="saveProfile()" data-i18n="prof.save">💾 Save &amp; Find My Schemes</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">✅ Profile saved! Redirecting to schemes…</div>
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 Ministry of Social Justice &amp; Empowerment. SIH 2026 prototype.</div>
+</footer>
+
+<script>
+const REQ_FIELDS = ['fullName','gender','dob','caste','address','district','state','pincode','education','income','businessCategory','projectCost'];
+
+// Auth guard
+(function(){
+  const s = localStorage.getItem('cf_session');
+  if(!s){ window.location.href='sign-in.html'; return; }
+  try {
+    const sess = JSON.parse(s);
+    if(!sess.token){ window.location.href='sign-in.html'; return; }
+    document.getElementById('profInit').textContent = (sess.username||'?')[0].toUpperCase();
+    document.getElementById('pdName').textContent   = sess.username;
+    document.getElementById('pdPhone').textContent  = sess.phone;
+  } catch(e){ window.location.href='sign-in.html'; }
+
+  // Load saved profile
+  const p = localStorage.getItem('cf_profile');
+  if(p) try { loadProfile(JSON.parse(p)); } catch(e){}
+  update();
+})();
+
+function loadProfile(p){
+  const map = {
+    fullName:'fullName', gender:'gender', dob:'dob', caste:'caste',
+    address:'address', district:'district', state:'state', pincode:'pincode',
+    aadhar:'aadhar', education:'education', income:'income', occupation:'occupation',
+    isSanitationWorker: null,
+    businessCategory:'businessCategory', businessStatus:'businessStatus',
+    currentRevenue:'currentRevenue', project_cost:'projectCost',
+    businessLocation:'bizLocation', employees:'employees',
+    preferredTenure:'tenure', preferredPartner:'prefPartner'
+  };
+  Object.entries(map).forEach(([k,id])=>{
+    if(!id) return;
+    const el = document.getElementById(id);
+    if(el && p[k]!==undefined && p[k]!==null) el.value = p[k];
+  });
+  if(p.isSanitationWorker) document.getElementById('sanitation').value = p.isSanitationWorker ? 'yes' : 'no';
+}
+
+function update(){
+  const filled = REQ_FIELDS.filter(id=>{ const el=document.getElementById(id); return el&&el.value&&el.value.trim()!==''; }).length;
+  const pct = Math.round(filled/REQ_FIELDS.length*100);
+  document.getElementById('pPct').textContent = pct+'%';
+  document.getElementById('pBar').style.width = pct+'%';
+
+  const name = document.getElementById('fullName').value.trim();
+  if(name){
+    document.getElementById('pName').textContent = name;
+    document.getElementById('pAv').textContent   = name[0].toUpperCase();
+    document.getElementById('profInit').textContent = name[0].toUpperCase();
+  }
+  const caste = document.getElementById('caste').value;
+  const state = document.getElementById('state').value;
+  const parts = [caste, state].filter(Boolean);
+  if(parts.length) document.getElementById('pMeta').textContent = parts.join(' · ');
+}
+
+async function saveProfile(){
+  const v = id => document.getElementById(id).value;
+  if(!v('fullName').trim()){ alert('Please enter your full name.'); return; }
+  if(!v('caste'))          { alert('Please select your caste category.'); return; }
+  if(!v('income'))         { alert('Please enter your annual family income.'); return; }
+  if(parseFloat(v('income')) > 500000){ alert('Income must be ≤ ₹5,00,000 to be eligible.'); return; }
+
+  const profile = {
+    fullName:          v('fullName').trim(),
+    gender:            v('gender'),
+    dob:               v('dob'),
+    caste:             v('caste'),
+    address:           v('address').trim(),
+    district:          v('district').trim(),
+    state:             v('state'),
+    pincode:           v('pincode').trim(),
+    aadhar:            v('aadhar').trim(),
+    education:         v('education'),
+    income:            v('income'),
+    occupation:        v('occupation'),
+    isSanitationWorker:v('sanitation') === 'yes',
+    businessCategory:  v('businessCategory'),
+    businessStatus:    v('businessStatus'),
+    currentRevenue:    v('currentRevenue'),
+    project_cost:      v('projectCost'),
+    businessLocation:  v('bizLocation'),
+    employees:         v('employees'),
+    preferredTenure:   v('tenure'),
+    preferredPartner:  v('prefPartner'),
+    savedAt:           new Date().toISOString()
+  };
+  localStorage.setItem('cf_profile', JSON.stringify(profile));
+
+  // Try backend save
+  try {
+    const sess = JSON.parse(localStorage.getItem('cf_session')||'{}');
+    if(sess.id){
+      await fetch('http://127.0.0.1:8000/profile',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({user_id:sess.id, ...profile})
+      });
+    }
+  } catch(e){ /* offline, ignore */ }
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(()=>{ toast.classList.remove('show'); window.location.href='schemes.html?cat=schemes'; }, 1600);
+}
+
+function toggleDrop(){ document.getElementById('profDrop').classList.toggle('open'); }
+document.addEventListener('click', e=>{ if(!document.getElementById('nav').contains(e.target)) document.getElementById('profDrop').classList.remove('open'); });
+function logout(){ localStorage.removeItem('cf_session'); window.location.href='sign-in.html'; }
+</script>
+</body>
+</html>
