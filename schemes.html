@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Schemes — MoSJE Udyam Saarthi</title>
+<meta name="description" content="View government schemes, micro finance, and loans you are eligible for."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/main.css"/>
+<script src="js/i18n.js"></script>
+</head>
+<body>
+<div id="google_translate_element"></div>
+<div class="tc"></div>
+<div class="gov-bar">
+  <span>🇮🇳 <strong>Ministry of Social Justice &amp; Empowerment</strong> — NSFDC</span>
+  <span>SIH 2026 | Problem 26092</span>
+</div>
+
+<nav class="navbar" id="nav">
+  <div class="nb-inner">
+    <a href="index.html" class="nb-brand">
+      <div class="nb-icon">CF</div>
+      <div><div class="nb-title">Udyam Saarthi</div><div class="nb-sub">MoSJE · NSFDC</div></div>
+    </a>
+    <div class="nb-links">
+      <a href="index.html"                      class="nb-link" data-i18n="nav.home">🏠 Home</a>
+      <button class="nb-link" id="nb-sch"  onclick="setMain('schemes')" data-i18n="nav.schemes">📋 Schemes</button>
+      <button class="nb-link" id="nb-mf"   onclick="setMain('micro_finance')" data-i18n="nav.micro">💼 Micro Finance</button>
+      <button class="nb-link" id="nb-loan" onclick="setMain('loans')" data-i18n="nav.loans">🏦 Loans</button>
+    </div>
+    <div class="nb-profile">
+      <div class="prof-btn" id="profBtn" onclick="toggleDrop()"><span id="profInit">👤</span></div>
+      <div class="prof-drop" id="profDrop">
+        <div class="pd-header">
+          <div class="pd-name"  id="pdName">—</div>
+          <div class="pd-phone" id="pdPhone">—</div>
+        </div>
+        <a href="profile.html" class="pd-item" data-i18n="drop.profile">👤 My Profile</a>
+        <div class="divider" style="margin:0"></div>
+        <button class="pd-item red" onclick="logout()" data-i18n="drop.logout">🚪 Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Hero -->
+<div class="schemes-hero" id="pageHero">
+  <div class="container">
+    <h1 id="heroTitle">Government Schemes</h1>
+    <p id="heroSub">Showing schemes matched to your profile eligibility.</p>
+  </div>
+</div>
+
+<!-- Category Tabs -->
+<div class="cat-bar">
+  <div class="container">
+    <div class="cat-bar-in">
+      <button class="cat-tab on" id="t-all"       onclick="filterCat('all')" data-i18n="sch.cat.all">All</button>
+      <button class="cat-tab"    id="t-micro"      onclick="filterCat('micro_credit')">Micro Credit</button>
+      <button class="cat-tab"    id="t-women"      onclick="filterCat('women_empowerment')">Women Empowerment</button>
+      <button class="cat-tab"    id="t-term"       onclick="filterCat('term_loan')">Term Loans</button>
+      <button class="cat-tab"    id="t-edu"        onclick="filterCat('education')">Education</button>
+      <button class="cat-tab"    id="t-san"        onclick="filterCat('sanitation')">Sanitation</button>
+      <button class="cat-tab"    id="t-solar"      onclick="filterCat('solar_green')">Solar &amp; Green</button>
+    </div>
+  </div>
+</div>
+
+<div class="container page-wrap">
+
+  <div class="prof-alert" id="profAlert" style="display:none">
+    <span style="font-size:1.4rem">⚠️</span>
+    <div>
+    <h4 data-i18n="sch.prof.h4">Complete your profile for personalized matches</h4>
+      <p>Fill income, caste category, and business details to see exactly which schemes you qualify for. <a href="profile.html" style="color:#0f2167;font-weight:700">Complete Profile →</a></p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="count-label" id="countLbl"></div>
+    <select class="fc" id="sortSel" onchange="sortAndRender()" style="width:auto;padding:7px 12px;font-size:.82rem">
+      <option value="match">Best Match</option>
+      <option value="interest_asc">Interest: Low → High</option>
+      <option value="amount_desc">Max Loan: High → Low</option>
+      <option value="name_asc">Name: A → Z</option>
+    </select>
+  </div>
+
+  <div class="scheme-grid" id="schemeGrid"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 Ministry of Social Justice &amp; Empowerment. SIH 2026 prototype.</div>
+</footer>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+let allSchemes = [], filtered = [], mainCat = 'schemes', catFilter = 'all';
+let userProfile = null;
+
+const catMeta = {
+  schemes:      { title:'Government Schemes',    sub:'Personalized scheme recommendations based on your profile.', navId:'nb-sch' },
+  micro_finance:{ title:'Micro Finance Products', sub:'Small-ticket, fast-disbursed micro-credit for grassroots ventures.', navId:'nb-mf' },
+  loans:        { title:'Loans',                  sub:'Term loans and specialized credit for larger enterprises.', navId:'nb-loan' }
+};
+const mainCatMap = {
+  schemes:      ['micro_credit','women_empowerment','term_loan','sanitation','solar_green'],
+  micro_finance:['micro_credit','women_empowerment'],
+  loans:        ['term_loan','education','sanitation','solar_green']
+};
+const catTabMap  = { all:'t-all', micro_credit:'t-micro', women_empowerment:'t-women', term_loan:'t-term', education:'t-edu', sanitation:'t-san', solar_green:'t-solar' };
+const catIcons   = { micro_credit:{i:'💰',bg:'#eff6ff',c:'#1e40af'}, women_empowerment:{i:'👩',bg:'#fdf4ff',c:'#7c3aed'}, term_loan:{i:'🏢',bg:'#fff7ed',c:'#c2410c'}, education:{i:'🎓',bg:'#f0fdf4',c:'#15803d'}, sanitation:{i:'🚿',bg:'#ecfdf5',c:'#065f46'}, solar_green:{i:'☀️',bg:'#fefce8',c:'#854d0e'} };
+const catLabels  = { micro_credit:'Micro Credit', women_empowerment:'Women Empowerment', term_loan:'Term Loan', education:'Education', sanitation:'Sanitation', solar_green:'Solar & Green' };
+
+// Auth guard
+(function(){
+  const s = localStorage.getItem('cf_session');
+  if(!s){ window.location.href='sign-in.html'; return; }
+  try {
+    const sess = JSON.parse(s);
+    if(!sess.token){ window.location.href='sign-in.html'; return; }
+    document.getElementById('profInit').textContent = (sess.username||'?')[0].toUpperCase();
+    document.getElementById('pdName').textContent   = sess.username;
+    document.getElementById('pdPhone').textContent  = sess.phone;
+  } catch(e){ window.location.href='sign-in.html'; }
+  const p = localStorage.getItem('cf_profile');
+  if(p) try { userProfile = JSON.parse(p); } catch(e){}
+  const cat = new URLSearchParams(window.location.search).get('cat') || 'schemes';
+  setMain(cat, false);
+})();
+
+function setMain(cat, push=true){
+  mainCat = cat;
+  const m = catMeta[cat] || catMeta.schemes;
+  document.getElementById('heroTitle').textContent = m.title;
+  document.getElementById('heroSub').textContent   = m.sub;
+  ['nb-sch','nb-mf','nb-loan'].forEach(id => document.getElementById(id).classList.remove('on'));
+  document.getElementById(m.navId).classList.add('on');
+  if(push) history.replaceState({}, '', '?cat='+cat);
+  fetchAndRender();
+}
+
+function filterCat(c){
+  catFilter = c;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('on'));
+  const tid = catTabMap[c];
+  if(tid) document.getElementById(tid).classList.add('on');
+  sortAndRender();
+}
+
+async function fetchAndRender(){
+  renderSkeletons();
+  try {
+    const body = buildBody();
+    if(!body){
+      document.getElementById('profAlert').style.display = 'flex';
+      const r = await fetch(API+'/schemes');
+      const d = await r.json();
+      allSchemes = (d.schemes||d||[]).map(s => ({...s, match_score: 60 + Math.floor(Math.random()*30), is_eligible:true}));
+    } else {
+      document.getElementById('profAlert').style.display = 'none';
+      const r = await fetch(API+'/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d = await r.json();
+      allSchemes = (d.recommendations||[]).map(s => ({
+        ...(s.scheme||s), match_score: s.score||s.match_score||75, is_eligible: s.is_eligible!==false, match_reasons:s.reasons||[]
+      }));
+    }
+    const allowed = mainCatMap[mainCat]||mainCatMap.schemes;
+    allSchemes = allSchemes.filter(s => allowed.includes(s.category));
+    sortAndRender();
+  } catch(err){
+    document.getElementById('schemeGrid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="ei">⚠️</div><h3>Could not load schemes</h3><p>Backend not running? Error: ${err.message}</p><button class="btn btn-navy" onclick="fetchAndRender()">Retry</button></div>`;
+  }
+}
+
+function buildBody(){
+  if(!userProfile || !userProfile.income) return null;
+  const p = userProfile;
+  return {
+    caste_category: p.caste||'SC',
+    family_annual_income: parseFloat(p.income)||200000,
+    gender: p.gender||'male',
+    estimated_project_cost: parseFloat(p.project_cost)||100000,
+    project_type: p.businessCategory||'retail_shop',
+    education_status: p.education||'12th_pass',
+    is_sanitation_worker: !!p.isSanitationWorker,
+    state: p.state||'', district: p.district||''
+  };
+}
+
+function sortAndRender(){
+  const sort = document.getElementById('sortSel').value;
+  let list = catFilter === 'all' ? [...allSchemes] : allSchemes.filter(s => s.category === catFilter);
+  list.sort((a,b) => {
+    if(sort==='match')        return (b.match_score||0) - (a.match_score||0);
+    if(sort==='interest_asc') return (a.interest_rate_male||0) - (b.interest_rate_male||0);
+    if(sort==='amount_desc')  return (b.max_project_cost||0) - (a.max_project_cost||0);
+    if(sort==='name_asc')     return a.name.localeCompare(b.name);
+    return 0;
+  });
+  filtered = list;
+  document.getElementById('countLbl').textContent = `${list.length} scheme${list.length!==1?'s':''} found`;
+  renderSchemes(list);
+}
+
+function renderSkeletons(){
+  document.getElementById('schemeGrid').innerHTML = Array(6).fill(0).map(() => `
+    <div class="sc-card" style="pointer-events:none;padding:18px">
+      <div class="skel" style="width:42px;height:42px;border-radius:10px;margin-bottom:12px"></div>
+      <div class="skel" style="height:17px;width:65%;margin-bottom:8px"></div>
+      <div class="skel" style="height:11px;width:40%;margin-bottom:14px"></div>
+      <div class="skel" style="height:44px;width:100%;margin-bottom:14px;border-radius:6px"></div>
+      <div style="height:46px;background:#f8fafc;border-top:1px solid #f1f5f9;margin:-1px -1px 0"></div>
+    </div>`).join('');
+}
+
+function renderSchemes(list){
+  const g = document.getElementById('schemeGrid');
+  if(!list.length){
+    g.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="ei">🔍</div><h3>No matching schemes found</h3><p>Try a different filter or <a href="profile.html" style="color:#0f2167;font-weight:700">update your profile</a>.</p></div>`;
+    return;
+  }
+  g.innerHTML = list.map(s => {
+    const ci = catIcons[s.category]||{i:'📋',bg:'#f1f5f9',c:'#475569'};
+    const rate = Math.min(s.interest_rate_female||99, s.interest_rate_male||99);
+    const maxLoan = (s.max_project_cost*(s.max_loan_percentage||90)/100);
+    const score = s.match_score||70;
+    const isTop = score >= 85;
+    return `
+      <div class="sc-card ${isTop?'top':''}" onclick="location.href='scheme-detail.html?id=${s.id}'" tabindex="0" role="button">
+        <span class="sc-badge badge ${isTop?'badge-green':'badge-navy'}">${isTop?'⭐ Top Match':catLabels[s.category]||'Scheme'}</span>
+        <div class="sc-body">
+          <div class="sc-icon" style="background:${ci.bg};color:${ci.c}">${ci.i}</div>
+          <div class="sc-name">${s.name}</div>
+          <div class="sc-code">${s.short_code||s.id}</div>
+          <div class="sc-desc">${s.description_en||'—'}</div>
+        </div>
+        <div class="mb-wrap">
+          <div class="mb-hdr"><span>Eligibility Match</span><strong>${score}%</strong></div>
+          <div class="mb-track"><div class="mb-fill" style="width:${score}%"></div></div>
+        </div>
+        <div class="sc-metrics">
+          <div class="met"><div class="v">₹${(maxLoan/100000).toFixed(1)}L</div><div class="l">Max Loan</div></div>
+          <div class="met"><div class="v">${rate}%</div><div class="l">Interest</div></div>
+          <div class="met"><div class="v">${s.max_loan_percentage||90}%</div><div class="l">Coverage</div></div>
+          <div class="met"><div class="v">${s.max_tenure_years||5}yr</div><div class="l">Tenure</div></div>
+        </div>
+        <div class="sc-foot">
+          <span class="partners">${(s.channel_partner_types||[]).join(' · ')}</span>
+          <span class="more">Details →</span>
+        </div>
+      </div>`;
+  }).join('');
+  if (window.retranslateDynamicContent) {
+    setTimeout(window.retranslateDynamicContent, 80);
+  }
+}
+
+function toggleDrop(){ document.getElementById('profDrop').classList.toggle('open'); }
+document.addEventListener('click', e => { if(!document.getElementById('nav').contains(e.target)) document.getElementById('profDrop').classList.remove('open'); });
+function logout(){ localStorage.removeItem('cf_session'); window.location.href='sign-in.html'; }
+</script>
+</body>
+</html>
