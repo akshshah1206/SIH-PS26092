@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoSJE Udyam Saarthi — Home</title>
+  <meta name="description" content="AI-Driven Scheme Matching for Marginalized SC Entrepreneurs — MoSJE NSFDC." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/i18n.js"></script>
+</head>
+
+<body>
+  <div id="google_translate_element"></div>
+  <div class="tc"></div>
+
+  <div class="gov-bar">
+    <span>🇮🇳 <strong>Ministry of Social Justice &amp; Empowerment</strong> — NSFDC · SIH 2026 Problem 26092</span>
+    <span>Toll Free: 1800-180-5567</span>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="nav">
+    <div class="nb-inner">
+      <a href="index.html" class="nb-brand">
+        <div class="nb-icon">US</div>
+        <div>
+          <div class="nb-title">Udhyam Saarthi</div>
+          <div class="nb-sub">MoSJE · NSFDC</div>
+        </div>
+      </a>
+      <div class="nb-links">
+        <a href="index.html" class="nb-link on" data-i18n="nav.home">🏠 Home</a>
+        <a href="schemes.html?cat=schemes" class="nb-link" data-i18n="nav.schemes">📋 Schemes</a>
+        <a href="schemes.html?cat=micro_finance" class="nb-link" data-i18n="nav.micro">💼 Micro Finance</a>
+        <a href="schemes.html?cat=loans" class="nb-link" data-i18n="nav.loans">🏦 Loans</a>
+      </div>
+      <div class="nb-profile">
+        <div class="prof-btn" id="profBtn" onclick="toggleDrop()"><span id="profInit">👤</span></div>
+        <div class="prof-drop" id="profDrop">
+          <div class="pd-header">
+            <div class="pd-name" id="pdName">—</div>
+            <div class="pd-phone" id="pdPhone">—</div>
+          </div>
+          <a href="profile.html" class="pd-item" data-i18n="drop.profile">👤 My Profile</a>
+          <div class="divider" style="margin:0"></div>
+          <button class="pd-item red" onclick="logout()" data-i18n="drop.logout">🚪 Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-in">
+      <div class="hero-tag"><span class="dot"></span> <span data-i18n="home.tag">AI-Powered · Government Backed ·
+          Free</span></div>
+      <h2><span data-i18n="home.h2.a">Find the</span> <span class="hl" data-i18n="home.h2.b">Right Credit
+          Scheme</span><br><span data-i18n="home.h2.c">for Your Business — Instantly</span></h2>
+      <p class="sub" data-i18n="home.sub">MoSJE Udyam Saarthi uses artificial intelligence to match Scheduled Caste
+        entrepreneurs with concessional loan schemes, connect them with channel partners, and simplify the application
+        journey.</p>
+      <div class="hero-cta">
+        <a href="schemes.html?cat=schemes" class="btn btn-saffron btn-lg" data-i18n="home.btn1">🔍 Explore Schemes</a>
+        <a href="profile.html" class="btn btn-ghost-white btn-lg" data-i18n="home.btn2">👤 Complete Profile</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="v">₹5L</div>
+          <div class="l">Max Loan</div>
+        </div>
+        <div class="hstat">
+          <div class="v">6.5%</div>
+          <div class="l">Interest p.a.</div>
+        </div>
+        <div class="hstat">
+          <div class="v">100+</div>
+          <div class="l">Partners</div>
+        </div>
+        <div class="hstat">
+          <div class="v">8</div>
+          <div class="l">Schemes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" style="background:#fff">
+    <div class="container" style="text-align:center">
+      <div class="sec-label" data-i18n="sec.about.label">📖 About This Platform</div>
+      <h2 class="sec-title" data-i18n="sec.about.title">What is MoSJE Udyam Saarthi?</h2>
+      <p style="font-size:1rem;color:#64748b;line-height:1.8;max-width:780px;margin:12px auto 0">
+        The Ministry of Social Justice &amp; Empowerment (MoSJE) through NSFDC provides concessional financial
+        assistance to Scheduled Caste (SC) entrepreneurs with annual family income up to ₹5 Lakhs. Funds flow via
+        <strong>Channel Partners</strong> — State Channelizing Agencies (SCAs), Public Sector Banks (PSBs), Regional
+        Rural Banks (RRBs), and NBFC-MFIs.
+      </p>
+      <p style="font-size:1rem;color:#64748b;line-height:1.8;max-width:780px;margin:14px auto 0">
+        This platform eliminates guesswork by <strong>automatically matching you to the right scheme</strong>,
+        calculating your EMI at concessional rates, and routing you to the nearest channel partner — all in one place.
+      </p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" style="background:#f8fafc">
+    <div class="container">
+      <div style="text-align:center">
+        <div class="sec-label" data-i18n="sec.how.label">🔄 Simple Process</div>
+        <h2 class="sec-title" data-i18n="sec.how.title">How It Works</h2>
+        <p class="sec-sub" style="margin:8px auto 0">Four steps to access concessional credit</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-ico">📝</div>
+          <div class="step-title">Register &amp; Verify</div>
+          <div class="step-desc">Sign up with your mobile number and verify via OTP — no branch visit required.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-ico">👤</div>
+          <div class="step-title">Build Your Profile</div>
+          <div class="step-desc">Enter your income, caste, education, and business details for personalized matching.
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-ico">🤖</div>
+          <div class="step-title">AI Matches Schemes</div>
+          <div class="step-desc">Our AI engine scores all government schemes based on your eligibility in real time.
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-ico">🏦</div>
+          <div class="step-title">Apply via Partner</div>
+          <div class="step-desc">Connect to the nearest channel partner in your area and submit your application.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT WE OFFER -->
+  <section class="section" style="background:#fff">
+    <div class="container">
+      <div style="text-align:center">
+        <div class="sec-label" data-i18n="sec.offer.label">📦 Our Services</div>
+        <h2 class="sec-title" data-i18n="sec.offer.title">Explore Our Offerings</h2>
+        <p class="sec-sub" style="margin:8px auto 0">Navigate to any section to view schemes you are eligible for</p>
+      </div>
+      <div class="offer-grid">
+        <a href="schemes.html?cat=schemes" class="offer-card">
+          <div class="offer-ico" style="background:#eff6ff">📋</div>
+          <div class="offer-t">Government Schemes</div>
+          <div class="offer-d">All NSFDC credit schemes personalized to your income, gender, caste, and business type.
+          </div>
+          <div class="offer-cta">Explore Schemes →</div>
+        </a>
+        <a href="schemes.html?cat=micro_finance" class="offer-card">
+          <div class="offer-ico" style="background:#fff7ed">💼</div>
+          <div class="offer-t">Micro Finance</div>
+          <div class="offer-d">Small, fast-disbursed micro-credit through SHGs, MFIs, and local SCAs for grassroots
+            ventures.</div>
+          <div class="offer-cta">Explore Micro Finance →</div>
+        </a>
+        <a href="schemes.html?cat=loans" class="offer-card">
+          <div class="offer-ico" style="background:#f0fdf4">🏦</div>
+          <div class="offer-t">Loans</div>
+          <div class="offer-d">Term loans up to ₹25 Lakhs for larger enterprises — solar, education, sanitation
+            verticals.</div>
+          <div class="offer-cta">Explore Loans →</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <div class="cta-band">
+    <div class="container">
+      <h2>Are You Eligible?</h2>
+      <p>SC category · Annual family income ≤ ₹5 Lakhs · Indian resident · Age 18–60</p>
+      <div class="btns">
+        <a href="profile.html" class="btn btn-saffron btn-lg">Fill Profile &amp; Get Matched</a>
+        <a href="schemes.html?cat=schemes" class="btn btn-ghost-white btn-lg">Browse All Schemes</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-in">
+      <div><strong>MoSJE Udyam Saarthi</strong><br>National Scheduled Caste Finance &amp; Development Corporation<br>SIH
+        2026 — Problem Statement 26092</div>
+      <div><strong>Navigate</strong><br><a href="schemes.html"
+          style="color:rgba(255,255,255,.55);text-decoration:none">Schemes</a> · <a href="profile.html"
+          style="color:rgba(255,255,255,.55);text-decoration:none">Profile</a></div>
+      <div><strong>Helpline</strong><br>1800-180-5567 (Toll Free)<br>Mon–Sat · 9AM–6PM IST</div>
+    </div>
+    <div class="footer-copy">© 2026 Ministry of Social Justice &amp; Empowerment. SIH 2026 prototype.</div>
+  </footer>
+
+  <script>
+    // Auth guard
+    (function () {
+      const s = localStorage.getItem('cf_session');
+      if (!s) { window.location.href = 'sign-in.html'; return; }
+      try {
+        const sess = JSON.parse(s);
+        if (!sess.token) { window.location.href = 'sign-in.html'; return; }
+        document.getElementById('profInit').textContent = (sess.username || '?')[0].toUpperCase();
+        document.getElementById('pdName').textContent = sess.username || '—';
+        document.getElementById('pdPhone').textContent = sess.phone || '—';
+      } catch (e) { window.location.href = 'sign-in.html'; }
+    })();
+
+    function toggleDrop() {
+      document.getElementById('profDrop').classList.toggle('open');
+    }
+    document.addEventListener('click', e => {
+      if (!document.getElementById('nav').contains(e.target))
+        document.getElementById('profDrop').classList.remove('open');
+    });
+    function logout() {
+      localStorage.removeItem('cf_session');
+      window.location.href = 'sign-in.html';
+    }
+  </script>
+</body>
+
+</html>
