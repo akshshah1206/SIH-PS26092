@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — MoSJE Udhyam Sarthi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"
+    media="print" onload="this.media='all'" />
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet" />
+  </noscript>
+  <script src="js/i18n.js" defer></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      font-size: 16px;
+      height: 100%
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: #f8fafc
+    }
+
+    /* Tricolor strip */
+    .tc {
+      height: 4px;
+      background: linear-gradient(90deg, #ff9933 33.3%, #fff 33.3% 66.6%, #138808 66.6%)
+    }
+
+    /* Layout */
+    .wrap {
+      min-height: calc(100vh - 4px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch
+    }
+
+    @media(max-width:860px) {
+      .wrap {
+        grid-template-columns: 1fr
+      }
+
+      .hero-col {
+        display: none
+      }
+    }
+
+    /* Hero Side */
+    .hero-col {
+      background: linear-gradient(145deg, #09154a 0%, #1e3a8a 100%);
+      padding: 60px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-col::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      right: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(249, 115, 22, .18) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .h-logo {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, .12);
+      border: 2px solid #f97316;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .h-tagline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: .74rem;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .9);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .h-tagline .dot {
+      width: 7px;
+      height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #4ade80
+    }
+
+    .hero-col h2 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-col h2 span {
+      color: #f97316
+    }
+
+    .hero-col p {
+      color: rgba(255, 255, 255, .76);
+      font-size: .96rem;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 420px;
+      position: relative;
+      z-index: 1
+    }
+
+    .h-stats {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1
+    }
+
+    .h-stat {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 12px;
+      padding: 12px 18px
+    }
+
+    .h-stat .v {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1
+    }
+
+    .h-stat .l {
+      font-size: .68rem;
+      color: rgba(255, 255, 255, .65);
+      text-transform: uppercase;
+      margin-top: 4px
+    }
+
+    /* Auth Panel */
+    .auth-col {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 50px 52px;
+      /* FIX: overflow-y so content scrolls on short viewports instead of clipping */
+      overflow-y: auto;
+    }
+
+    @media(max-width:860px) {
+      .auth-col {
+        padding: 36px 28px;
+        justify-content: flex-start
+      }
+    }
+
+    @media(max-width:540px) {
+      .auth-col {
+        padding: 28px 16px
+      }
+    }
+
+    /* Brand Row */
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #0f2167, #1e3a8a);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      font-weight: 900;
+      color: #fff;
+      border: 2px solid #f97316;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(15, 33, 103, 0.15);
+    }
+
+    .brand-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #0f2167;
+      line-height: 1.2
+    }
+
+    .brand-sub {
+      font-size: .7rem;
+      color: #64748b;
+      font-weight: 500
+    }
+
+    /* Step indicator */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px
+    }
+
+    .sd {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      transition: background .25s, box-shadow .25s, color .25s;
+    }
+
+    .sd.done {
+      background: #16a34a;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3)
+    }
+
+    .sd.active {
+      background: #0f2167;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(15, 33, 103, 0.3)
+    }
+
+    .sd.idle {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0
+    }
+
+    .sl {
+      flex: 1;
+      height: 3px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      transition: background .3s
+    }
+
+    .sl.done {
+      background: #16a34a
+    }
+
+    /* Step views */
+    .step-v {
+      display: none
+    }
+
+    .step-v.on {
+      display: block;
+      animation: fadeSlide .28s cubic-bezier(0.16, 1, 0.3, 1) both
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateX(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    h3.form-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+      letter-spacing: -0.4px
+    }
+
+    p.form-sub {
+      font-size: .875rem;
+      color: #64748b;
+      margin-bottom: 22px;
+      line-height: 1.55
+    }
+
+    /* Form */
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px
+    }
+
+    .fg label {
+      font-size: .82rem;
+      font-weight: 700;
+      color: #334155
+    }
+
+    .fg input,
+    .fg select {
+      font-family: inherit;
+      font-size: .92rem;
+      padding: 12px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #1e293b;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      width: 100%;
+    }
+
+    .fg input:focus,
+    .fg select:focus {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, .12)
+    }
+
+    .fg .hint {
+      font-size: .72rem;
+      color: #94a3b8;
+      line-height: 1.4
+    }
+
+    .phone-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch
+    }
+
+    .pfx {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: .88rem;
+      font-weight: 700;
+      color: #475569;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      text-decoration: none;
+      line-height: 1;
+    }
+
+    .btn-primary {
+      background: #0f2167;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(15, 33, 103, .28)
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #1a2e80;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15, 33, 103, .35)
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #475569;
+      border: 1.5px solid #cbd5e1
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      border-color: #0f2167;
+      color: #0f2167;
+      background: #f8fafc
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important
+    }
+
+    .btn-full {
+      width: 100%
+    }
+
+    /* Phone pill */
+    /* FIX: was inline-flex which clipped on narrow screens */
+    .target-phone-pill {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: .84rem;
+      color: #1e40af;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .target-phone-pill .pill-phone {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0
+    }
+
+    .target-phone-pill .btn-change {
+      color: #2563eb;
+      font-size: .76rem;
+      text-decoration: underline;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-weight: 700;
+      padding: 0;
+      white-space: nowrap;
+      transition: color .15s;
+      font-family: inherit;
+    }
+
+    .target-phone-pill .btn-change:hover {
+      color: #1d4ed8
+    }
+
+    /* OTP inputs */
+    .otp-container {
+      margin-bottom: 12px
+    }
+
+    .otp-label {
+      font-size: .82rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 10px;
+      display: block
+    }
+
+    /* FIX: grid instead of flexbox so boxes stay equal-width at any viewport */
+    .otp-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px
+    }
+
+    .od {
+      width: 100%;
+      /* FIX: aspect-ratio + clamp replaces fixed height:60px that crushed on mobile */
+      aspect-ratio: 1/1;
+      max-height: 64px;
+      text-align: center;
+      font-size: clamp(1.1rem, 4vw, 1.6rem);
+      font-weight: 800;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background: #ffffff;
+      outline: none;
+      color: #0f2167;
+      transition: border-color .15s, box-shadow .15s, background .15s, transform .15s;
+      font-family: inherit;
+      /* FIX: caret hidden by default; shown only on focus (looks wrong centered otherwise) */
+      caret-color: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      padding: 0;
+      cursor: text;
+      display: block;
+    }
+
+    .od:focus {
+      border-color: #0f2167;
+      box-shadow: 0 0 0 3px rgba(15, 33, 103, .14);
+      background: #f8fafc;
+      transform: scale(1.06);
+      caret-color: #0f2167;
+    }
+
+    .od.filled {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #1e40af
+    }
+
+    .od.error-state {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #b91c1c;
+      animation: shakeField .35s ease
+    }
+
+    @keyframes shakeField {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20%,
+      60% {
+        transform: translateX(-5px)
+      }
+
+      40%,
+      80% {
+        transform: translateX(5px)
+      }
+    }
+
+    /* Demo OTP box */
+    .demo-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fff7ed;
+      border: 1.5px dashed #f97316;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: .82rem;
+      color: #9a3412;
+      margin-bottom: 16px;
+      flex-wrap: nowrap;
+      transition: transform .15s;
+    }
+
+    @media(max-width:400px) {
+      .demo-box {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center
+      }
+    }
+
+    .demo-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    .demo-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 5px;
+      background: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #fdba74;
+      color: #c2410c;
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+      user-select: all;
+    }
+
+    .demo-code:hover {
+      background: #ffedd5;
+      transform: scale(1.04)
+    }
+
+    .btn-autofill {
+      background: #f97316;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-size: .78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .15s, transform .15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+
+    .btn-autofill:hover {
+      background: #ea580c;
+      transform: translateY(-1px)
+    }
+
+    .btn-autofill:active {
+      transform: translateY(0)
+    }
+
+    /* Timer bar */
+    .timer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: .82rem;
+      color: #64748b;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      padding: 0 2px;
+    }
+
+    .timer-text {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .timer-text strong {
+      color: #0f2167;
+      font-variant-numeric: tabular-nums
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      color: #0f2167;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: .82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      transition: color .15s, background .15s;
+      font-family: inherit;
+    }
+
+    .resend-btn:hover:not(:disabled) {
+      color: #2563eb;
+      background: #eff6ff
+    }
+
+    .resend-btn:disabled {
+      color: #94a3b8;
+      cursor: not-allowed
+    }
+
+    /* FIX: unified action buttons block; no more scattered inline margin-top styles */
+    .otp-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px
+    }
+
+    /* Alerts */
+    /* FIX: shake animation is a toggled class; prevents it firing on initial page render */
+    .alert {
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: .83rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .alert.err {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .alert.ok {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .alert.shaking {
+      animation: shakeAlert .3s ease
+    }
+
+    @keyframes shakeAlert {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20%,
+      60% {
+        transform: translateX(-6px)
+      }
+
+      40%,
+      80% {
+        transform: translateX(6px)
+      }
+    }
+
+    /* Success Step 3 */
+    .s-circle {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #fff;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 28px rgba(22, 163, 74, 0.32);
+      animation: popIn .45s cubic-bezier(.34, 1.56, .64, 1) both;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    /* Spinner */
+    .spin {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      border: 2.5px solid rgba(255, 255, 255, .35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rot .6s linear infinite;
+    }
+
+    @keyframes rot {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    #google_translate_element {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+  <div id="google_translate_element"></div>
+  <div class="tc"></div>
+  <div class="wrap">
+
+    <!-- LEFT HERO -->
+    <div class="hero-col">
+      <div class="h-logo">US</div>
+      <div class="h-tagline"><span class="dot"></span> AI-Powered · Government Backed</div>
+      <h2>Empowering<br><span>Marginalized Entrepreneurs</span><br>Across India</h2>
+      <p>MoSJE Udhyam Sarthi delivers AI-driven concessional credit matching, loan calculators, and verified channel
+        partner routing for marginalized entrepreneurs.</p>
+
+    </div>
+
+    <!-- RIGHT AUTH PANEL -->
+    <div class="auth-col">
+
+      <div class="brand-row">
+        <div class="brand-icon">US</div>
+        <div>
+          <div class="brand-name">MoSJE Udhyam Sarthi</div>
+          <div class="brand-sub">SIH 2026 — Problem Statement 26092 · NSFDC</div>
+        </div>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="steps" id="stepsBar" aria-label="Sign-in steps">
+        <div class="sd active" id="sd1" aria-current="step">1</div>
+        <div class="sl" id="sl1"></div>
+        <div class="sd idle" id="sd2">2</div>
+        <div class="sl" id="sl2"></div>
+        <div class="sd idle" id="sd3">&#x2713;</div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step-v on" id="sv1">
+        <h3 class="form-title">Welcome</h3>
+        <p class="form-sub">Sign in or register with your mobile number to access personalised credit schemes.</p>
+
+        <div id="a1" class="alert" role="alert" aria-live="assertive"></div>
+
+        <div class="fg">
+          <label for="uname">Beneficiary Username</label>
+          <input id="uname" type="text" placeholder="e.g. ramesh_kumar" autocomplete="username" spellcheck="false" />
+          <span class="hint">Letters, numbers, or underscores — minimum 3 characters.</span>
+        </div>
+
+        <div class="fg">
+          <label for="ph">Mobile Number</label>
+          <div class="phone-row">
+            <div class="pfx">&#x1F1EE;&#x1F1F3; +91</div>
+            <input id="ph" type="tel" placeholder="9876543210" maxlength="10" inputmode="numeric" style="flex:1"
+              autocomplete="tel" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="btnSend" onclick="sendOtp()" style="margin-top:8px" type="button">
+          Send Verification OTP &#x2192;
+        </button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-v" id="sv2">
+        <h3 class="form-title">Enter Verification Code</h3>
+        <p class="form-sub">We&#39;ve sent a 6-digit one-time password to your registered phone.</p>
+
+        <div class="target-phone-pill">
+          <span class="pill-phone">&#x1F4F2; <span id="phDisp">+91 &#x2014;</span></span>
+          <button class="btn-change" onclick="goBack()" title="Change phone number" type="button">&#x270F;&#xFE0F;
+            Change</button>
+        </div>
+
+        <div id="a2" class="alert" role="alert" aria-live="assertive"></div>
+
+        <!-- Demo OTP Box -->
+        <div class="demo-box" id="demoBox">
+          <div class="demo-left">
+            <span>&#x1F510; Demo OTP:</span>
+            <span class="demo-code" id="otpShow" onclick="fillOtpFromDemo()" title="Click to fill OTP" tabindex="0"
+              role="button" aria-label="Click to auto-fill demo OTP">123456</span>
+          </div>
+          <button class="btn-autofill" type="button" onclick="fillOtpFromDemo()">
+            &#x2728; Auto-Fill
+          </button>
+        </div>
+
+        <div class="otp-container">
+          <label class="otp-label" id="otpLabelId">6-Digit OTP</label>
+          <div class="otp-row" id="otpRow" role="group" aria-labelledby="otpLabelId">
+            <input class="od" id="o1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              autocomplete="one-time-code" aria-label="OTP digit 1" />
+            <input class="od" id="o2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              aria-label="OTP digit 2" />
+            <input class="od" id="o3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              aria-label="OTP digit 3" />
+            <input class="od" id="o4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              aria-label="OTP digit 4" />
+            <input class="od" id="o5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              aria-label="OTP digit 5" />
+            <input class="od" id="o6" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+              aria-label="OTP digit 6" />
+          </div>
+        </div>
+
+        <div class="timer-bar">
+          <div class="timer-text" id="timerWrap">
+            <span>&#x23F1;&#xFE0F; Resend in <strong id="tc">30</strong>s</span>
+          </div>
+          <button class="resend-btn" id="btnResend" onclick="resendOtp()" disabled type="button">
+            &#x1F504; Resend OTP
+          </button>
+        </div>
+
+        <div class="otp-actions">
+          <button class="btn btn-primary btn-full" id="btnVer" onclick="verifyOtp()" disabled type="button">
+            Verify &amp; Continue
+          </button>
+          <button class="btn btn-outline btn-full" onclick="goBack()" type="button">
+            &#x2190; Back to Mobile Input
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-v" id="sv3" role="status" aria-live="polite">
+        <div style="text-align:center;padding:28px 0">
+          <div class="s-circle">&#x2713;</div>
+          <h3 class="form-title" style="text-align:center">Identity Verified!</h3>
+          <p class="form-sub" style="text-align:center">Welcome to Udhyam Sarthi, <strong
+              id="wname">&#x2014;</strong>.<br>Redirecting to your schemes dashboard&#x2026;</p>
+          <div style="margin-top:20px;display:flex;justify-content:center">
+            <div class="spin"
+              style="border-color:rgba(15,33,103,.2);border-top-color:#0f2167;width:28px;height:28px;border-width:3.5px">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = (window.location.origin && /^https?:/.test(window.location.origin))
+      ? window.location.origin
+      : 'http://127.0.0.1:8000';
+
+    let _token = null;
+    let _timer = null;
+    let _timerSeconds = 30;
+    let _currentDemoOtp = '123456';
+
+    const digits = ['o1', 'o2', 'o3', 'o4', 'o5', 'o6'].map(id => document.getElementById(id));
+
+    digits.forEach((el, i) => {
+      el.addEventListener('input', e => {
+        clearA(2);
+        digits.forEach(d => d.classList.remove('error-state'));
+        const val = el.value.replace(/\D/g, '');
+        el.value = val ? val.slice(-1) : '';
+        el.classList.toggle('filled', !!el.value);
+        if (el.value && i < 5) digits[i + 1].focus();
+        updateVerifyBtn();
+        if (getOtp().length === 6) setTimeout(verifyOtp, 180);
+      });
+
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Backspace') {
+          clearA(2);
+          if (el.value) {
+            el.value = ''; el.classList.remove('filled'); updateVerifyBtn();
+          } else if (i > 0) {
+            digits[i - 1].value = ''; digits[i - 1].classList.remove('filled'); digits[i - 1].focus(); updateVerifyBtn();
+          }
+          e.preventDefault();
+        } else if (e.key === 'ArrowLeft' && i > 0) { digits[i - 1].focus(); e.preventDefault(); }
+        else if (e.key === 'ArrowRight' && i < 5) { digits[i + 1].focus(); e.preventDefault(); }
+        else if (e.key === 'Enter' && getOtp().length === 6) verifyOtp();
+      });
+
+      el.addEventListener('paste', e => {
+        clearA(2);
+        const pasted = (e.clipboardData || window.clipboardData).getData('text');
+        const cleaned = pasted.replace(/\D/g, '').slice(0, 6);
+        if (cleaned.length > 0) {
+          e.preventDefault();
+          cleaned.split('').forEach((ch, idx) => {
+            if (digits[idx]) { digits[idx].value = ch; digits[idx].classList.add('filled'); digits[idx].classList.remove('error-state'); }
+          });
+          digits[Math.min(cleaned.length, 5)].focus();
+          updateVerifyBtn();
+          if (cleaned.length === 6) setTimeout(verifyOtp, 180);
+        }
+      });
+
+      el.addEventListener('click', () => { if (el.value) el.select(); });
+    });
+
+    function getOtp() { return digits.map(d => d.value).join(''); }
+    function updateVerifyBtn() { document.getElementById('btnVer').disabled = getOtp().length < 6; }
+
+    function fillOtpFromDemo() {
+      clearA(2);
+      const code = _currentDemoOtp || '123456';
+      code.split('').forEach((ch, idx) => {
+        if (digits[idx]) { digits[idx].value = ch; digits[idx].classList.add('filled'); digits[idx].classList.remove('error-state'); }
+      });
+      digits[5].focus(); updateVerifyBtn();
+      const db = document.getElementById('demoBox');
+      if (db) { db.style.transform = 'scale(0.98)'; setTimeout(() => { db.style.transform = ''; }, 160); }
+    }
+
+    function alert2(step, msg, type = 'err') {
+      const el = document.getElementById('a' + step);
+      if (!el) return;
+      const icon = type === 'err' ? '&#x26A0;&#xFE0F;' : '&#x2705;';
+      el.classList.remove('shaking');
+      el.className = 'alert ' + type;
+      el.innerHTML = '<span>' + icon + '</span><span>' + msg + '</span>';
+      void el.offsetWidth;
+      el.classList.add('shaking');
+    }
+    function clearA(step) {
+      const el = document.getElementById('a' + step);
+      if (el) { el.className = 'alert'; el.innerHTML = ''; }
+    }
+
+    async function sendOtp() {
+      const u = document.getElementById('uname').value.trim();
+      const p = document.getElementById('ph').value.trim();
+      clearA(1);
+      if (!u || u.length < 3) { alert2(1, 'Username must be at least 3 characters.'); document.getElementById('uname').focus(); return; }
+      if (!/^[a-zA-Z0-9_]+$/.test(u)) { alert2(1, 'Username can only contain letters, numbers, and underscores.'); document.getElementById('uname').focus(); return; }
+      if (!/^\d{10}$/.test(p)) { alert2(1, 'Please enter a valid 10-digit Indian mobile number.'); document.getElementById('ph').focus(); return; }
+
+      const btn = document.getElementById('btnSend');
+      btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Sending OTP\u2026';
+      try {
+        const formattedPhone = '+91' + p;
+        const r = await fetch(API + '/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, phone: formattedPhone }) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.detail || 'Failed to send OTP. Please try again.');
+        _token = d.token; _currentDemoOtp = d.demo_otp || '123456';
+        localStorage.setItem('_t_token', _token); localStorage.setItem('_t_user', u);
+        localStorage.setItem('_t_phone', formattedPhone); localStorage.setItem('_t_demo_otp', _currentDemoOtp);
+        document.getElementById('phDisp').textContent = '+91 ' + p.slice(0, 5) + ' ' + p.slice(5);
+        document.getElementById('otpShow').textContent = _currentDemoOtp;
+        showStep(2); clearOtpInputs(); startTimer();
+        setTimeout(() => { digits[0].focus(); }, 150);
+      } catch (e) { alert2(1, e.message); }
+      finally { btn.disabled = false; btn.innerHTML = 'Send Verification OTP \u2192'; }
+    }
+
+    async function resendOtp() {
+      const u = localStorage.getItem('_t_user') || document.getElementById('uname').value.trim();
+      const rawPhone = localStorage.getItem('_t_phone') || ('+91' + document.getElementById('ph').value.trim());
+      if (!rawPhone || rawPhone.length < 10) { goBack(); return; }
+      const btn = document.getElementById('btnResend');
+      btn.disabled = true; btn.innerHTML = '\u1F504 Sending\u2026';
+      try {
+        const r = await fetch(API + '/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, phone: rawPhone }) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.detail || 'Failed to resend OTP.');
+        _token = d.token; _currentDemoOtp = d.demo_otp || '123456';
+        localStorage.setItem('_t_token', _token); localStorage.setItem('_t_demo_otp', _currentDemoOtp);
+        document.getElementById('otpShow').textContent = _currentDemoOtp;
+        clearOtpInputs(); startTimer();
+        alert2(2, 'A fresh OTP has been sent to ' + rawPhone + '!', 'ok');
+        setTimeout(() => { digits[0].focus(); }, 100);
+      } catch (e) { alert2(2, e.message, 'err'); btn.disabled = false; btn.innerHTML = '\uD83D\uDD04 Resend OTP'; }
+    }
+
+    async function verifyOtp() {
+      const otp = getOtp();
+      const tok = _token || localStorage.getItem('_t_token') || 'DEMO-TOKEN';
+      const u = localStorage.getItem('_t_user') || document.getElementById('uname').value.trim() || 'demo_user';
+      const p = localStorage.getItem('_t_phone') || ('+91' + document.getElementById('ph').value.trim());
+      clearA(2);
+      if (otp.length < 6) { alert2(2, 'Please enter all 6 digits of the OTP.'); return; }
+      const btn = document.getElementById('btnVer');
+      btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Verifying\u2026';
+      try {
+        const r = await fetch(API + '/auth/verify-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: tok, otp: otp, username: u, phone: p }) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.detail || 'Incorrect OTP. Please try again or click Auto-Fill.');
+        const sess = { id: d.user_id, username: d.username || u, phone: p, token: d.session_token || 'TOKEN-ACTIVE', hasProfile: d.has_profile || false };
+        localStorage.setItem('cf_session', JSON.stringify(sess));
+        document.getElementById('wname').textContent = sess.username;
+        showStep(3);
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+      } catch (e) {
+        alert2(2, e.message);
+        digits.forEach(d => d.classList.add('error-state'));
+        btn.disabled = false; btn.innerHTML = 'Verify &amp; Continue';
+        setTimeout(() => { digits[0].focus(); digits[0].select(); }, 100);
+      }
+    }
+
+    function clearOtpInputs() {
+      digits.forEach(d => { d.value = ''; d.classList.remove('filled', 'error-state'); });
+      updateVerifyBtn();
+    }
+
+    function goBack() {
+      clearInterval(_timer); clearA(1); clearA(2); clearOtpInputs(); showStep(1);
+      setTimeout(() => { const ph = document.getElementById('ph'); if (ph) ph.focus(); }, 100);
+    }
+
+    function showStep(n) {
+      ['sv1', 'sv2', 'sv3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'step-v' + (i + 1 === n ? ' on' : '');
+      });
+      ['sd1', 'sd2', 'sd3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (i + 1 < n) { el.className = 'sd done'; el.textContent = '\u2713'; el.removeAttribute('aria-current'); }
+        else if (i + 1 === n) { el.className = 'sd active'; el.textContent = i < 2 ? String(i + 1) : '\u2713'; el.setAttribute('aria-current', 'step'); }
+        else { el.className = 'sd idle'; el.textContent = i < 2 ? String(i + 1) : '\u2713'; el.removeAttribute('aria-current'); }
+      });
+      ['sl1', 'sl2'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'sl' + (i + 1 < n ? ' done' : '');
+      });
+    }
+
+    function startTimer() {
+      _timerSeconds = 30; clearInterval(_timer);
+      const tw = document.getElementById('timerWrap');
+      const btnResend = document.getElementById('btnResend');
+      btnResend.disabled = true; btnResend.innerHTML = '\uD83D\uDD04 Resend OTP';
+      tw.innerHTML = '<span>\u23F1\uFE0F Resend in <strong id="tc">30</strong>s</span>';
+      _timer = setInterval(() => {
+        _timerSeconds--;
+        const tcEl = document.getElementById('tc');
+        if (tcEl) tcEl.textContent = _timerSeconds;
+        if (_timerSeconds <= 0) {
+          clearInterval(_timer);
+          tw.innerHTML = '<span style="color:#16a34a;font-weight:600">\u2705 You can resend now.</span>';
+          btnResend.disabled = false;
+        }
+      }, 1000);
+    }
+
+    document.getElementById('uname').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('ph').focus(); });
+    document.getElementById('ph').addEventListener('keydown', e => { if (e.key === 'Enter') sendOtp(); });
+    document.getElementById('otpShow').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fillOtpFromDemo(); } });
+
+    (function () {
+      try { const s = localStorage.getItem('cf_session'); if (s && JSON.parse(s).token) window.location.href = 'index.html'; } catch (e) { }
+    })();
+  </script>
+</body>
+
+</html>
